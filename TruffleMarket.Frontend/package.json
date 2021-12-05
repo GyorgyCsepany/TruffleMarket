@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.10.1",
+    "prettier": "2.5.1",
     "vite": "^2.6.14"
   }
 }
