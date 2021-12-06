@@ -23,9 +23,27 @@ jobs:
         run: dotnet publish -c Release -o release
         working-directory: ./TruffleMarketApi
 
+      - name: Install the dependencies of TruffleMarket.Frontend
+        run: npm install
+        working-directory: ./TruffleMarket.Frontend
+
+      - name: Build TruffleMarket.Frontend
+        run: npm run build
+        working-directory: ./TruffleMarket.Frontend
+
       - name: Deploy TruffleMarketApi to Azure
         uses: azure/webapps-deploy@v2
         with:
           app-name: TruffleMarketApi
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }}
           package: ./TruffleMarketApi/release
+
+      - name: Deploy TruffleMarket.Frontend to Azure
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "./TruffleMarket.Frontend/dist"
+          output_location: ""
+          skip_app_build: true
