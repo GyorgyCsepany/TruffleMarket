@@ -24,7 +24,7 @@ jobs:
         working-directory: ./TruffleMarketApi
 
       - name: Install the dependencies of TruffleMarket.Frontend
-        run: npm install
+        run: npm ci
         working-directory: ./TruffleMarket.Frontend
 
       - name: Build TruffleMarket.Frontend
