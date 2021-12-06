@@ -1,0 +1,25 @@
+name: "CI/CD"
+
+on:
+  push: "master"
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    timeout-minutes: 10
+
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create release package of TruffleMarketApi
+        run: dotnet publish -c Release -o release
+        working-directory: ./TruffleMarketApi
+
+      - name: Deploy TruffleMarketApi to Azure
+        uses: azure/webapps-deploy@v2
+        working-directory: ./TruffleMarketApi
+        with:
+          app-name: TruffleMarketApi
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }}
+          package: ./release
