@@ -1,7 +1,7 @@
 name: "CI/CD"
 
 on:
-  push: "master"
+  push: master
   workflow_dispatch:
 
 jobs:
