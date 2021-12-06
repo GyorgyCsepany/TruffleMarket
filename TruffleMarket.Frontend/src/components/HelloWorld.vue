@@ -1,16 +1,23 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 
 defineProps({
-  msg: String
-})
+  msg: String,
+});
 
-const count = ref(0)
+const count = ref(0);
+let weather = ref(null);
+
+(async () => {
+  const response = await fetch("https://localhost:7198/weatherforecast");
+  const json = await response.json();
+  weather.value = json;
+})();
 </script>
 
 <template>
   <h1>{{ msg }}</h1>
-
+  <p v-if="weather">{{ weather[0].summary }}</p>
   <p>
     Recommended IDE setup:
     <a href="https://code.visualstudio.com/" target="_blank">VSCode</a>
