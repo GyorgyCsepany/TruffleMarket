@@ -10,8 +10,7 @@ let departments = ref(null);
 
 (async () => {
   const response = await fetch(
-    //"https://trufflemarketapi.azurewebsites.net/testdb"
-    "https://localhost:7198/testdb"
+    "https://trufflemarketapi.azurewebsites.net/testdb"
   );
   const json = await response.json();
   departments.value = json;
