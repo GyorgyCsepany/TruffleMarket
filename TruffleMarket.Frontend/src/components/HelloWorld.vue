@@ -9,7 +9,7 @@ const count = ref(0);
 let weather = ref(null);
 
 (async () => {
-  const response = await fetch("https://localhost:7198/weatherforecast");
+  const response = await fetch("https://trufflemarketapi.azurewebsites.net/weatherforecast");
   const json = await response.json();
   weather.value = json;
 })();
