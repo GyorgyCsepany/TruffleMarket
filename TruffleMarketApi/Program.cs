@@ -1,6 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using TruffleMarketApi.Database;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors();
+
+var connectionString = builder.Configuration.GetConnectionString("TruffleMarketDb");
+builder.Services.AddDbContext<TruffleMarketDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 // Add services to the container.
 
@@ -28,6 +35,10 @@ app.MapGet("/weatherforecast", () =>
         .ToArray();
     return forecast;
 });
+
+
+app.MapGet("/testdb", async (TruffleMarketDbContext db) =>
+    await db.Department.ToListAsync());
 
 app.Run();
 

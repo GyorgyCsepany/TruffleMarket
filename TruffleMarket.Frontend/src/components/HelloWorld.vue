@@ -6,18 +6,21 @@ defineProps({
 });
 
 const count = ref(0);
-let weather = ref(null);
+let departments = ref(null);
 
 (async () => {
-  const response = await fetch("https://trufflemarketapi.azurewebsites.net/weatherforecast");
+  const response = await fetch(
+    //"https://trufflemarketapi.azurewebsites.net/testdb"
+    "https://localhost:7198/testdb"
+  );
   const json = await response.json();
-  weather.value = json;
+  departments.value = json;
 })();
 </script>
 
 <template>
   <h1>{{ msg }}</h1>
-  <p v-if="weather">{{ weather[0].summary }}</p>
+  <p v-if="departments">{{ departments[0] }}</p>
   <p>
     Recommended IDE setup:
     <a href="https://code.visualstudio.com/" target="_blank">VSCode</a>
