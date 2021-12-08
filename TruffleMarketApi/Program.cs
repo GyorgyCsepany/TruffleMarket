@@ -37,12 +37,12 @@ app.MapGet("/weatherforecast", () =>
 });
 
 
-app.MapGet("/items", async (TruffleMarketDbContext db) => 
-    await db.Items.ToListAsync());
+app.MapGet("/randomitem", async (TruffleMarketDbContext db) => 
+    await db.Items.Skip(Random.Shared.Next(100)).FirstOrDefaultAsync());
 
 app.Run();
 
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
+internal record WeatherForecast(DateTime Date, int TemperatureC, string Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }

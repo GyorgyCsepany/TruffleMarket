@@ -6,20 +6,21 @@ defineProps({
 });
 
 const count = ref(0);
-let items = ref(null);
+let randomItem = ref(null);
 
-(async () => {
+const getItems = async () => {
   const response = await fetch(
-    "https://trufflemarketapi.azurewebsites.net/items"
+    "https://trufflemarketapi.azurewebsites.net/randomitem"
   );
   const json = await response.json();
-  items.value = json;
-})();
+  randomItem.value = json;
+};
 </script>
 
 <template>
   <h1>{{ msg }}</h1>
-  <p v-if="items">{{ items[0] }}</p>
+  <el-button type="primary" plain @click="getItems">Get Item</el-button>
+  <p v-if="randomItem">{{ randomItem }}</p>
   <p>
     Recommended IDE setup:
     <a href="https://code.visualstudio.com/" target="_blank">VSCode</a>
