@@ -6,20 +6,20 @@ defineProps({
 });
 
 const count = ref(0);
-let departments = ref(null);
+let items = ref(null);
 
 (async () => {
   const response = await fetch(
-    "https://trufflemarketapi.azurewebsites.net/testdb"
+    "https://trufflemarketapi.azurewebsites.net/items"
   );
   const json = await response.json();
-  departments.value = json;
+  items.value = json;
 })();
 </script>
 
 <template>
   <h1>{{ msg }}</h1>
-  <p v-if="departments">{{ departments[0] }}</p>
+  <p v-if="items">{{ items[0] }}</p>
   <p>
     Recommended IDE setup:
     <a href="https://code.visualstudio.com/" target="_blank">VSCode</a>

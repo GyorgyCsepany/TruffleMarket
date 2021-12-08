@@ -10,11 +10,11 @@ namespace TruffleMarketApi.Database
         {
         }
 
-        public DbSet<Department> Department => Set<Department>();
+        public DbSet<Item> Items => Set<Item>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new DepartmentMap());
+            modelBuilder.ApplyConfiguration(new ItemMap());
         }
     }
 }
