@@ -1,5 +1,5 @@
 <script setup>
-import HelloWorld from "./components/HelloWorld.vue";
+import Items from "./components/Items.vue";
 import { ref } from "vue";
 
 let activeTab = ref("firstTab");
@@ -15,7 +15,7 @@ let activeTab = ref("firstTab");
         <el-tab-pane label="Submit an offer" name="fourthTab"></el-tab-pane>
       </el-tabs>
     </el-header>
-    <el-main><HelloWorld /></el-main>
+    <el-main><Items /></el-main>
   </el-container>
 </template>
 
@@ -30,7 +30,7 @@ body {
 
 .el-header {
   text-transform: uppercase;
-  background-color: #194461;
+  background-color: #2C394F;
   line-height: 60px;
   padding-left: max(15px, 10%);
   padding-right: max(15px, 10%);

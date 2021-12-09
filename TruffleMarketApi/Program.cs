@@ -37,8 +37,8 @@ app.MapGet("/weatherforecast", () =>
 });
 
 
-app.MapGet("/randomitem", async (TruffleMarketDbContext db) => 
-    await db.Items.Skip(Random.Shared.Next(100)).FirstOrDefaultAsync());
+app.MapGet("/items", async (TruffleMarketDbContext db) =>
+    await db.Items.ToListAsync());
 
 app.Run();
 
