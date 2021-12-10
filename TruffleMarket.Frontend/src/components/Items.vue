@@ -28,7 +28,7 @@ const gridColumns = [
     field: "origin",
   },
   {
-    label: "Date Of picking",
+    label: "Date of picking",
     field: "dateOfPicking",
     type: "date",
     dateInputFormat: "yyyy-MM-dd'T'HH:mm:ssXXX",
