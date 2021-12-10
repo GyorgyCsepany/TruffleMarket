@@ -3,8 +3,6 @@ import { ref } from "vue";
 import "vue-good-table-next/dist/vue-good-table-next.css";
 import { VueGoodTable } from "vue-good-table-next";
 
-let gridRows = ref(null);
-
 const gridColumns = [
   {
     label: "Truffle",
@@ -54,26 +52,46 @@ const gridColumns = [
   },
 ];
 
-(async () => {
-  const response = await fetch(
-    "https://trufflemarketapi.azurewebsites.net/items"
-  );
+const getItems = async (newParams) => {
+  gridRequest = { ...gridRequest, ...newParams };
+  const response = await fetch("https://trufflemarketapi.azurewebsites.net", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+    },
+    body: JSON.stringify(gridRequest),
+  });
   const json = await response.json();
-  gridRows.value = json;
-})();
+  gridRows.value = json.rows;
+  rowCount.value = json.totalRows;
+};
+
+let gridRows = ref(null);
+let rowCount = ref(0);
+let gridRequest = {
+  page: 1,
+  perPage: 10,
+};
+
+(async () => await getItems())();
 </script>
 
 <template>
   <vue-good-table
     v-if="gridRows"
+    mode="remote"
+    theme="nocturnal"
     :line-numbers="true"
-    :columns="gridColumns"
     :rows="gridRows"
+    :columns="gridColumns"
+    :totalRows="rowCount"
     :pagination-options="{
       enabled: true,
-      perPage: 10,
     }"
-    theme="nocturnal"
+    @column-filter="getItems({ ...$event, page: 1 })"
+    @page-change="getItems({ page: $event.currentPage })"
+    @per-page-change="getItems({ perPage: $event.currentPerPage, page: 1 })"
+    @sort-change="getItems({ sort: $event, page: 1 })"
   />
 </template>
 

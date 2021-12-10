@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TruffleMarketApi.Database;
+using TruffleMarketApi.Database.Models;
+using TruffleMarketApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,31 +20,48 @@ app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-       new WeatherForecast
-       (
-           DateTime.Now.AddDays(index),
-           Random.Shared.Next(-20, 55),
-           summaries[Random.Shared.Next(summaries.Length)]
-       ))
-        .ToArray();
-    return forecast;
-});
-
 
 app.MapGet("/items", async (TruffleMarketDbContext db) =>
     await db.Items.ToListAsync());
 
-app.Run();
-
-internal record WeatherForecast(DateTime Date, int TemperatureC, string Summary)
+app.MapPost("/items", async (ItemsGridRequest gridRequest, TruffleMarketDbContext db) =>
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    var filteredTruffle = gridRequest.ColumnFilters?.Truffle;
+    var queryable = db.Items.Where(item => string.IsNullOrEmpty(filteredTruffle) || item.Truffle == filteredTruffle);
+
+    var totalCount = await queryable.CountAsync();
+
+
+    if (gridRequest.Sort != null && gridRequest.Sort.FirstOrDefault().Type != "none")
+    {
+        var sortProperty = gridRequest.Sort.FirstOrDefault().Field;
+        var formattedSortProperty = Char.ToUpperInvariant(sortProperty[0]) + sortProperty[1..];
+
+        if (gridRequest.Sort.FirstOrDefault().Type == "desc")
+        { 
+            queryable = queryable.OrderByDescending(item => EF.Property<Item>(item, formattedSortProperty));
+        }else
+        {
+            queryable = queryable.OrderBy(item => EF.Property<Item>(item, formattedSortProperty));
+        }
+    }
+
+    if (totalCount > gridRequest.PerPage)
+    {
+        queryable = queryable
+            .Skip((gridRequest.Page - 1) * gridRequest.PerPage)
+            .Take(gridRequest.PerPage);
+    }
+
+    var items = await queryable.ToListAsync();
+
+    return new ItemsGridResponse
+    {
+        TotalRows = totalCount,
+        Rows = items
+    };
+
+});
+
+
+app.Run();
