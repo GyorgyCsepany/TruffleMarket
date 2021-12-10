@@ -54,7 +54,7 @@ const gridColumns = [
 
 const getItems = async (newParams) => {
   gridRequest = { ...gridRequest, ...newParams };
-  const response = await fetch("https://trufflemarketapi.azurewebsites.net", {
+  const response = await fetch("https://trufflemarketapi.azurewebsites.net/items", {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=utf-8",

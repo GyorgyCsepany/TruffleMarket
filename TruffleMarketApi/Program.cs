@@ -20,10 +20,6 @@ app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(
 
 app.UseHttpsRedirection();
 
-
-app.MapGet("/items", async (TruffleMarketDbContext db) =>
-    await db.Items.ToListAsync());
-
 app.MapPost("/items", async (ItemsGridRequest gridRequest, TruffleMarketDbContext db) =>
 {
     var filteredTruffle = gridRequest.ColumnFilters?.Truffle;
