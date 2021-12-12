@@ -11,10 +11,12 @@ namespace TruffleMarketApi.Database
         }
 
         public DbSet<Item> Items => Set<Item>();
+        public DbSet<UserModel> Users => Set<UserModel>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ItemMap());
+            modelBuilder.ApplyConfiguration(new UserMap());
         }
     }
 }

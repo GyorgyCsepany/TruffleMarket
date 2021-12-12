@@ -1,24 +1,42 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TruffleMarketApi.Database;
 using TruffleMarketApi.Database.Models;
 using TruffleMarketApi.Models;
+using TruffleMarketApi.Services.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors();
 
+builder.Services.Configure<JwtAuthenticationConfig>(builder.Configuration.GetSection("JwtAuthentication"));
+
 var connectionString = builder.Configuration.GetConnectionString("TruffleMarketDb");
 builder.Services.AddDbContext<TruffleMarketDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Add services to the container.
+builder.Services.AddTransient<IJwtTokenService, JwtTokenService>();
+
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
 app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-// Configure the HTTP request pipeline.
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
+
+app.MapGet("/login", async ([FromBody] UserModel userModel, IJwtTokenService jwtTokenService) => {
+
+    var token = await jwtTokenService.GetToken(userModel);
+    return token is null ? Results.StatusCode(401) : Results.Ok(token);
+
+});
 
 app.MapPost("/items", async (ItemsGridRequest gridRequest, TruffleMarketDbContext db) =>
 {
@@ -56,8 +74,6 @@ app.MapPost("/items", async (ItemsGridRequest gridRequest, TruffleMarketDbContex
         TotalRows = totalCount,
         Rows = items
     };
-
 });
-
 
 app.Run();
