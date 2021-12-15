@@ -1,9 +1,10 @@
 ﻿using TruffleMarketApi.Database.Models;
+using TruffleMarketApi.Models;
 
 namespace TruffleMarketApi.Services.Authentication
 {
     public interface IJwtTokenService
     {
-        Task<string> GetToken(UserModel userModel);
+        UserResponseModel GetUserWithToken(UserModel userModel);
     }
 }

@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
-import "vue-good-table-next/dist/vue-good-table-next.css";
 import { VueGoodTable } from "vue-good-table-next";
+import "vue-good-table-next/dist/vue-good-table-next.css";
 
 const gridColumns = [
   {
@@ -54,20 +54,23 @@ const gridColumns = [
 
 const getItems = async (newParams) => {
   gridRequest = { ...gridRequest, ...newParams };
-  const response = await fetch("https://trufflemarketapi.azurewebsites.net/items", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json;charset=utf-8",
-    },
-    body: JSON.stringify(gridRequest),
-  });
+  const response = await fetch(
+    "https://trufflemarketapi.azurewebsites.net/items",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+      body: JSON.stringify(gridRequest),
+    }
+  );
   const json = await response.json();
   gridRows.value = json.rows;
   rowCount.value = json.totalRows;
 };
 
-let gridRows = ref(null);
-let rowCount = ref(0);
+const gridRows = ref(null);
+const rowCount = ref(0);
 let gridRequest = {
   page: 1,
   perPage: 10,
@@ -94,5 +97,3 @@ let gridRequest = {
     @sort-change="getItems({ sort: $event, page: 1 })"
   />
 </template>
-
-<style scoped></style>

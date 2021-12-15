@@ -1,21 +1,36 @@
 <script setup>
-import Items from "./components/Items.vue";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-let activeTab = ref("firstTab");
+const activeTab = ref("itemsTab");
+const router = useRouter();
+
+const handleClick = (tabName) => {
+  switch (tabName) {
+    case "itemsTab":
+      router.push({ name: "Items" });
+      break;
+    case "loginTab":
+      router.push({ name: "LoginOrRegister" });
+      break;
+    // default:
+    //   alert("TODO");
+  }
+};
 </script>
 
 <template>
   <el-container>
     <el-header>
-      <el-tabs v-model="activeTab" @tab-click="handleClick">
-        <el-tab-pane label="Active items" name="firstTab"></el-tab-pane>
-        <el-tab-pane label="Your bids" name="secondTab"></el-tab-pane>
-        <el-tab-pane label="Your offers" name="thirdTab"></el-tab-pane>
-        <el-tab-pane label="Submit an offer" name="fourthTab"></el-tab-pane>
+      <el-tabs v-model="activeTab" @tab-click="handleClick($event.props.name)">
+        <el-tab-pane label="Active items" name="itemsTab" />
+        <el-tab-pane label="Your bids" name="bidsTab" />
+        <el-tab-pane label="Your offers" name="offersTab" />
+        <el-tab-pane label="Submit an offer" name="submitTab" />
+        <el-tab-pane label="Login" name="loginTab" />
       </el-tabs>
     </el-header>
-    <el-main><Items /></el-main>
+    <el-main><router-view /></el-main>
   </el-container>
 </template>
 
@@ -30,7 +45,7 @@ body {
 
 .el-header {
   text-transform: uppercase;
-  background-color: #2C394F;
+  background-color: #2c394f;
   line-height: 60px;
   padding-left: max(15px, 10%);
   padding-right: max(15px, 10%);
@@ -46,7 +61,7 @@ body {
 
 .el-tabs__item {
   color: rgb(199, 198, 198);
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .el-tabs__item.is-active,

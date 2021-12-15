@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TruffleMarketApi.Database;
 using TruffleMarketApi.Database.Models;
@@ -31,11 +30,21 @@ app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/login", async ([FromBody] UserModel userModel, IJwtTokenService jwtTokenService) => {
+app.MapPost("/login", async (UserModel userModel, TruffleMarketDbContext db, IJwtTokenService jwtTokenService) => {
 
-    var token = await jwtTokenService.GetToken(userModel);
-    return token is null ? Results.StatusCode(401) : Results.Ok(token);
+    var user = await db.Users.FirstOrDefaultAsync(u => u.Name == userModel.Name && u.Password == userModel.Password);
 
+    var userWithToken = jwtTokenService.GetUserWithToken(user);
+    return userWithToken is null ? Results.StatusCode(401) : Results.Ok(userWithToken);
+});
+
+app.MapPost("/register", async (UserModel userModel, TruffleMarketDbContext db, IJwtTokenService jwtTokenService) => {
+
+    db.Users.Add(userModel);
+    await db.SaveChangesAsync();
+
+    var userWithToken = jwtTokenService.GetUserWithToken(userModel);
+    return userWithToken;
 });
 
 app.MapPost("/items", async (ItemsGridRequest gridRequest, TruffleMarketDbContext db) =>

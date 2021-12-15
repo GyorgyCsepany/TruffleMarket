@@ -1,29 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TruffleMarketApi.Database;
 using TruffleMarketApi.Database.Models;
+using TruffleMarketApi.Models;
 
 namespace TruffleMarketApi.Services.Authentication
 {
     public class JwtTokenService : IJwtTokenService
     {
-        private readonly TruffleMarketDbContext _truffleMarketDbContext;
         private readonly IOptions<JwtAuthenticationConfig> _jwtAuthenticationConfig;
 
-        public JwtTokenService(TruffleMarketDbContext truffleMarketDbContext, IOptions<JwtAuthenticationConfig> jwtAuthenticationConfig)
+        public JwtTokenService(IOptions<JwtAuthenticationConfig> jwtAuthenticationConfig)
         {
-            _truffleMarketDbContext = truffleMarketDbContext;
             _jwtAuthenticationConfig = jwtAuthenticationConfig;
         }
 
-        public async Task<string> GetToken(UserModel userModel)
+        public UserResponseModel GetUserWithToken(UserModel user)
         {
-            var user = await _truffleMarketDbContext.Users.FirstOrDefaultAsync(u => u.Name == userModel.Name && u.Password == userModel.Password);
-
             if (user is null)
                 return null;
 
@@ -49,10 +44,15 @@ namespace TruffleMarketApi.Services.Authentication
                 signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
             );
 
-            var jwtToken = new JwtSecurityTokenHandler().WriteToken(jwt);
+            var userResponse = new UserResponseModel
+            {
+                UserId = user.UserId,
+                Name = user.Name,
+                IsAdmin = user.IsAdmin,
+                Token = new JwtSecurityTokenHandler().WriteToken(jwt)
+            };
 
-            return jwtToken;
-
+            return userResponse;
         }
     }
 }
