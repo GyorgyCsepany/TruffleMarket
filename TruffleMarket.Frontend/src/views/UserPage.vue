@@ -8,12 +8,18 @@ const router = useRouter();
 const userInput = ref({});
 const formRef = ref({});
 const isRegistration = ref(true);
+const loggedInUser = ref(localStorage.user && JSON.parse(localStorage.user));
 
 const showError = () => {
   ElMessage({
     message: "The user can not be authenticated! Please try again!",
     type: "error",
   });
+};
+
+const logout = () => {
+  loggedInUser.value = null;
+  localStorage.removeItem("user");
 };
 
 const submitForm = () => {
@@ -37,6 +43,7 @@ const submitForm = () => {
 
       if (response.ok) {
         localStorage.user = await response.text();
+        document.getElementsByClassName("el-menu-item")[0].click();
         router.push({ name: "Items" });
       } else {
         formRef.value.resetFields();
@@ -47,6 +54,7 @@ const submitForm = () => {
 };
 
 const selectRegistration = (isRegSelected) => {
+  formRef.value.resetFields();
   isRegistration.value = isRegSelected;
 };
 
@@ -73,10 +81,15 @@ const rules = ref({
 </script>
 
 <template>
-  <div class="Login-container">
-    <el-card class="box-card">
-      <h2 v-if="isRegistration">Register</h2>
-      <h2 v-else>Login</h2>
+  <div class="UserPage-container">
+    <el-card v-if="loggedInUser" class="box-card">
+      <h2>Welcome {{ loggedInUser.name }}!</h2>
+      <el-button color="#2c394f" type="primary" @click="logout"
+        >Logout</el-button
+      >
+    </el-card>
+    <el-card v-else class="box-card">
+      <h2>{{ isRegistration ? "Register" : "Login" }}</h2>
       <el-form
         ref="formRef"
         :model="userInput"
@@ -96,24 +109,19 @@ const rules = ref({
         >
           <el-input v-model="userInput.confirmPassword" />
         </el-form-item>
-        <el-form-item v-if="isRegistration">
-          <el-button color="#2c394f" type="primary" @click="submitForm"
-            >Register</el-button
-          >
-        </el-form-item>
-        <el-form-item v-else>
-          <el-button color="#2c394f" type="primary" @click="submitForm"
-            >Login</el-button
-          >
+        <el-form-item>
+          <el-button color="#2c394f" type="primary" @click="submitForm">
+            {{ isRegistration ? "Register" : "Login" }}
+          </el-button>
         </el-form-item>
       </el-form>
-      <div v-if="isRegistration" class="Login-footer">
+      <div v-if="isRegistration" class="UserPage-footer">
         Already have an account?
         <el-link :underline="false" @click="selectRegistration(false)"
           >Login</el-link
         >
       </div>
-      <div v-else class="Login-footer">
+      <div v-else class="UserPage-footer">
         Don't have an account?
         <el-link :underline="false" @click="selectRegistration(true)"
           >Register</el-link
@@ -124,28 +132,28 @@ const rules = ref({
 </template>
 
 <style>
-.Login-container {
+.UserPage-container {
   display: flex;
   justify-content: center;
 }
 
-.Login-footer {
+.UserPage-footer {
   font-size: 14px;
   text-align: center;
 }
 
-.Login-footer .el-link {
+.UserPage-footer .el-link {
   font-weight: bold;
   color: #2c394f;
 }
 
-.Login-container .el-card {
+.UserPage-container .el-card {
   background-color: rgb(231, 227, 227);
   width: 25rem;
   color: #2c394f !important;
 }
 
-.Login-container .el-form-item__label {
+.UserPage-container .el-form-item__label {
   line-height: 15px;
   font-weight: bold;
   color: #2c394f;

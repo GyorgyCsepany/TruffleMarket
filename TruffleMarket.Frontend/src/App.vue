@@ -1,20 +1,24 @@
 <script setup>
-import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { UserFilled } from "@element-plus/icons-vue";
 
-const activeTab = ref("itemsTab");
 const router = useRouter();
 
-const handleClick = (tabName) => {
-  switch (tabName) {
-    case "itemsTab":
+const handleMenuItemSelect = (menuIndex) => {
+  const user = localStorage.user && JSON.parse(localStorage.user);
+  switch (menuIndex) {
+    case "1":
       router.push({ name: "Items" });
       break;
-    case "loginTab":
+    case "5":
       router.push({ name: "LoginOrRegister" });
       break;
-    // default:
-    //   alert("TODO");
+    case "4":
+      router.push({
+        name: "NewOffer",
+        params: { userId: user ? user.userId : undefined },
+      });
+      break;
   }
 };
 </script>
@@ -22,13 +26,24 @@ const handleClick = (tabName) => {
 <template>
   <el-container>
     <el-header>
-      <el-tabs v-model="activeTab" @tab-click="handleClick($event.props.name)">
-        <el-tab-pane label="Active items" name="itemsTab" />
-        <el-tab-pane label="Your bids" name="bidsTab" />
-        <el-tab-pane label="Your offers" name="offersTab" />
-        <el-tab-pane label="Submit an offer" name="submitTab" />
-        <el-tab-pane label="Login" name="loginTab" />
-      </el-tabs>
+      <el-menu
+        ref="formRef"
+        default-active="1"
+        class="el-menu-demo"
+        mode="horizontal"
+        background-color="#2c394f"
+        text-color="rgb(199, 198, 198)"
+        active-text-color="white"
+        @select="handleMenuItemSelect"
+      >
+        <el-menu-item index="1">Active items</el-menu-item>
+        <el-menu-item index="2">Your bids</el-menu-item>
+        <el-menu-item index="3">Your offers</el-menu-item>
+        <el-menu-item index="4">Submit and offer</el-menu-item>
+        <el-menu-item index="5"
+          ><el-icon><user-filled /></el-icon
+        ></el-menu-item>
+      </el-menu>
     </el-header>
     <el-main><router-view /></el-main>
   </el-container>
@@ -43,37 +58,29 @@ body {
   margin: 0px;
 }
 
+.el-menu-item {
+  background-color: #2c394f !important;
+}
+
+.el-menu-item.is-active,
+.el-menu-item:hover {
+  color: white !important;
+  background-color: #2c394f !important;
+}
+
+.el-menu-item .el-icon {
+  font-size: 20px;
+}
+
 .el-header {
   text-transform: uppercase;
   background-color: #2c394f;
-  line-height: 60px;
   padding-left: max(15px, 10%);
   padding-right: max(15px, 10%);
+  font-weight: bold;
 }
 
 .el-main {
   padding: 20px max(15px, 10%);
-}
-
-.el-tabs__header .el-icon svg {
-  height: 60px;
-}
-
-.el-tabs__item {
-  color: rgb(199, 198, 198);
-  font-weight: bold;
-}
-
-.el-tabs__item.is-active,
-.el-tabs__item:hover {
-  color: white;
-}
-
-.el-tabs__active-bar {
-  background-color: white;
-}
-
-.el-tabs__nav-wrap::after {
-  background-color: transparent;
 }
 </style>
