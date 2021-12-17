@@ -113,7 +113,7 @@ const rules = ref({
             >
               <el-option label="Black" value="Black" />
               <el-option label="White" value="White" />
-              <el-option label="Summer" value="Summer" />
+              <el-option label="Garlic" value="Garlic" />
               <el-option label="Burgundy" value="Burgundy" />
             </el-select>
           </el-form-item>
