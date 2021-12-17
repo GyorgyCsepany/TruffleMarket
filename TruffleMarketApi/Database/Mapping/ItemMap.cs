@@ -8,20 +8,32 @@ namespace TruffleMarketApi.Database.Mapping
     {
         public void Configure(EntityTypeBuilder<Item> builder)
         {
-            // Primary Key
+
             builder.HasKey(i => i.ItemId);
 
-            // Table & Column Mappings
-            builder.ToTable("Items");
+            builder.ToTable("Item");
             builder.Property(i => i.ItemId).HasColumnName("ItemId");
             builder.Property(i => i.Truffle).HasColumnName("Truffle");
             builder.Property(i => i.Weight).HasColumnName("Weight");
             builder.Property(i => i.Price).HasColumnName("Price");
             builder.Property(i => i.Origin).HasColumnName("Origin");
-            builder.Property(i => i.DateOfPicking).HasColumnName("DateOfPicking");
+            builder.Property(i => i.PickingDate).HasColumnName("PickingDate");
             builder.Property(i => i.Certificated).HasColumnName("Certificated");
             builder.Property(i => i.Expiration).HasColumnName("Expiration");
-            builder.Property(i => i.Seller).HasColumnName("Seller");
+            builder.Property(i => i.Description).HasColumnName("Description");
+            builder.Property(i => i.SellerId).HasColumnName("SellerId");
+            builder.Property(i => i.BuyerId).HasColumnName("BuyerId");
+
+            builder
+                .HasOne(i => i.Seller)
+                .WithMany()
+                .HasForeignKey(i => i.SellerId);
+
+            builder
+                .HasOne(i => i.Buyer)
+                .WithMany()
+                .HasForeignKey(i => i.BuyerId)
+                .IsRequired(false);
 
         }
     }

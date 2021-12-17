@@ -1,6 +1,6 @@
-﻿namespace TruffleMarketApi.Models
+﻿namespace TruffleMarketApi.Services.User
 {
-    public class UserResponseModel
+    public class UserProfileModel
     {
         public int UserId { get; set; }
         public string Name { get; set; }

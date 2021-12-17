@@ -28,8 +28,8 @@ const gridColumns = [
     field: "origin",
   },
   {
-    label: "Date of picking",
-    field: "dateOfPicking",
+    label: "Picking date",
+    field: "pickingDate",
     type: "date",
     dateInputFormat: "yyyy-MM-dd'T'HH:mm:ssXXX",
     dateOutputFormat: "yyyy-MM-dd",
@@ -48,7 +48,7 @@ const gridColumns = [
   },
   {
     label: "Seller",
-    field: "seller",
+    field: "sellerName",
   },
 ];
 

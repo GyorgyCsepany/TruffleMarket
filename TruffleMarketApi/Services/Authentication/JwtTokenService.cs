@@ -3,8 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TruffleMarketApi.Database.Models;
-using TruffleMarketApi.Models;
+using TruffleMarketApi.Services.User;
 
 namespace TruffleMarketApi.Services.Authentication
 {
@@ -17,16 +16,13 @@ namespace TruffleMarketApi.Services.Authentication
             _jwtAuthenticationConfig = jwtAuthenticationConfig;
         }
 
-        public UserResponseModel GetUserWithToken(UserModel user)
+        public string GetToken(UserProfileModel model)
         {
-            if (user is null)
-                return null;
-
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Role, user.IsAdmin ? "Administrator" : "User")
+                new Claim(ClaimTypes.Name, model.Name),
+                new Claim(ClaimTypes.NameIdentifier, model.UserId.ToString()),
+                new Claim(ClaimTypes.Role, model.IsAdmin ? "Administrator" : "User")
             };
 
             var secret = _jwtAuthenticationConfig.Value.Secret;
@@ -44,15 +40,7 @@ namespace TruffleMarketApi.Services.Authentication
                 signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
             );
 
-            var userResponse = new UserResponseModel
-            {
-                UserId = user.UserId,
-                Name = user.Name,
-                IsAdmin = user.IsAdmin,
-                Token = new JwtSecurityTokenHandler().WriteToken(jwt)
-            };
-
-            return userResponse;
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
     }
 }

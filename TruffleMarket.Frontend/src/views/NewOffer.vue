@@ -50,7 +50,7 @@ const rules = ref({
     },
   ],
   expiration: [{ validator: checkExpiration, trigger: "blur" }],
-  dateOfPicking: [{ validator: checkPickingDate, trigger: "blur" }],
+  pickingDate: [{ validator: checkPickingDate, trigger: "blur" }],
 });
 </script>
 
@@ -106,9 +106,9 @@ const rules = ref({
           </el-form-item>
         </div>
         <div class="NewOffer-cardRow">
-          <el-form-item label="Picking" prop="dateOfPicking">
+          <el-form-item label="Picking" prop="pickingDate">
             <el-date-picker
-              v-model="offer.dateOfPicking"
+              v-model="offer.pickingDate"
               type="date"
               placeholder="Pick a day"
             />

@@ -26,17 +26,17 @@ const submitForm = () => {
   formRef.value.validate(async (valid) => {
     if (valid) {
       const response = await fetch(
-        `https://trufflemarketapi.azurewebsites.net/${
-          isRegistration.value ? "register" : "login"
-        }`,
+        "https://trufflemarketapi.azurewebsites.net/user",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json;charset=utf-8",
           },
           body: JSON.stringify({
+            isLogin: isRegistration.value ? false : true,
             name: userInput.value.user,
             password: userInput.value.password,
+            email: userInput.value.email,
           }),
         }
       );
@@ -71,12 +71,23 @@ const checkConfirmPassword = (rule, confirmPassword, callback) => {
   }
 };
 
+const checkEmail = (rule, email, callback) => {
+  var regExp = /\S+@\S+\.\S+/;
+
+  if (regExp.test(email)) {
+    callback();
+  } else {
+    callback(new Error("Please give a valid email!"));
+  }
+};
+
 const rules = ref({
   user: [{ required: true, message: "Please input name", trigger: "blur" }],
   password: [
     { required: true, message: "Please give a password", trigger: "blur" },
   ],
   confirmPassword: [{ validator: checkConfirmPassword, trigger: "blur" }],
+  email: [{ validator: checkEmail, trigger: "blur" }],
 });
 </script>
 
@@ -108,6 +119,9 @@ const rules = ref({
           prop="confirmPassword"
         >
           <el-input v-model="userInput.confirmPassword" />
+        </el-form-item>
+        <el-form-item v-if="isRegistration" label="Email" prop="email">
+          <el-input v-model="userInput.email" />
         </el-form-item>
         <el-form-item>
           <el-button color="#2c394f" type="primary" @click="submitForm">

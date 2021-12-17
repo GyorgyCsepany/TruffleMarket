@@ -1,6 +1,6 @@
-﻿namespace TruffleMarketApi.Models
+﻿namespace TruffleMarketApi.Services.Item
 {
-    public class ItemsGridRequest
+    public class GridRequestModel
     {
         public ColumnFiltersModel ColumnFilters { get; set; }
         public List<ColumnSortModel> Sort { get; set; }

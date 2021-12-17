@@ -1,4 +1,4 @@
-﻿namespace TruffleMarketApi.Models
+﻿namespace TruffleMarketApi.Services.Item
 {
     public class ColumnFiltersModel
     {
