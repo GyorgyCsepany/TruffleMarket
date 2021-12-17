@@ -17,6 +17,13 @@ const showError = () => {
   });
 };
 
+const showSuccess = () => {
+  ElMessage({
+    message: "Your are successfully authenticated!",
+    type: "success",
+  });
+};
+
 const logout = () => {
   loggedInUser.value = null;
   localStorage.removeItem("user");
@@ -33,15 +40,14 @@ const submitForm = () => {
             "Content-Type": "application/json;charset=utf-8",
           },
           body: JSON.stringify({
+            ...userInput.value,
             isLogin: isRegistration.value ? false : true,
-            name: userInput.value.user,
-            password: userInput.value.password,
-            email: userInput.value.email,
           }),
         }
       );
 
       if (response.ok) {
+        showSuccess();
         localStorage.user = await response.text();
         document.getElementsByClassName("el-menu-item")[0].click();
         router.push({ name: "Items" });
@@ -82,9 +88,9 @@ const checkEmail = (rule, email, callback) => {
 };
 
 const rules = ref({
-  user: [{ required: true, message: "Please input name", trigger: "blur" }],
+  name: [{ required: true, message: "Please input name!", trigger: "blur" }],
   password: [
-    { required: true, message: "Please give a password", trigger: "blur" },
+    { required: true, message: "Please give a password!", trigger: "blur" },
   ],
   confirmPassword: [{ validator: checkConfirmPassword, trigger: "blur" }],
   email: [{ validator: checkEmail, trigger: "blur" }],
@@ -108,7 +114,7 @@ const rules = ref({
         label-position="top"
       >
         <el-form-item label="Name" prop="user">
-          <el-input v-model="userInput.user" />
+          <el-input v-model="userInput.name" />
         </el-form-item>
         <el-form-item label="Password" prop="password">
           <el-input v-model="userInput.password" />

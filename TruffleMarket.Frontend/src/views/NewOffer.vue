@@ -1,7 +1,11 @@
 <script setup>
-import { Coin } from "@element-plus/icons-vue";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import { Coin } from "@element-plus/icons-vue";
+import "element-plus/es/components/message/style/css";
 
+const router = useRouter();
 const formRef = ref({});
 const offer = ref({
   weight: 1,
@@ -9,10 +13,49 @@ const offer = ref({
   certificated: false,
 });
 
+const currentUser = JSON.parse(localStorage.user);
+
+const showError = () => {
+  ElMessage({
+    message: "Your offer could not be created! Please try again!",
+    type: "error",
+  });
+};
+
+const showSuccess = (itemId) => {
+  ElMessage({
+    message: `Your offer successfully created! Id: ${itemId}`,
+    type: "success",
+  });
+};
+
 const submitForm = () => {
-  console.log(offer.value);
-  formRef.value.validate((valid) => {
-    console.log(valid);
+  formRef.value.validate(async (valid) => {
+    if (valid) {
+      const response = await fetch(
+        "https://trufflemarketapi.azurewebsites.net/item",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${currentUser.token}`,
+            "Content-Type": "application/json;charset=utf-8",
+          },
+          body: JSON.stringify({
+            ...offer.value,
+            sellerId: currentUser.userId,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const itemId = await response.text();
+        showSuccess(itemId);
+        document.getElementsByClassName("el-menu-item")[0].click();
+        router.push({ name: "Items" });
+      } else {
+        showError();
+      }
+    }
   });
 };
 

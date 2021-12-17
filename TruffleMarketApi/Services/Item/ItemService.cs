@@ -64,5 +64,25 @@ namespace TruffleMarketApi.Services.Item
                 Rows = rows
             };
         }
+
+        public async Task<int> Offer(ItemCreateModel itemCreateModel)
+        {
+            Database.Models.Item newItem = new()
+            {
+                Truffle = itemCreateModel.Truffle,
+                Weight = itemCreateModel.Weight,
+                Price = itemCreateModel.Price,
+                Origin = itemCreateModel.Origin,
+                PickingDate = itemCreateModel.PickingDate,
+                Certificated = itemCreateModel.Certificated,
+                Expiration = itemCreateModel.Expiration,
+                SellerId  = itemCreateModel.SellerId
+            };
+
+            _dBContext.Item.Add(newItem);
+            await _dBContext.SaveChangesAsync();
+
+            return newItem.ItemId;
+        }
     }
 }

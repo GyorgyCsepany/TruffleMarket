@@ -43,4 +43,7 @@ app.MapPost("/user", async (UserLoginOrRegisterModel loginOrRegisterModel, IUser
 app.MapPost("/items", async (GridRequestModel gridRequest, IItemService itemService ) =>
     await itemService.GetItemsForGrid(gridRequest));
 
+app.MapPost("/item", async (ItemCreateModel model, IItemService itemService) => 
+    await itemService.Offer(model)).RequireAuthorization();
+
 app.Run();
