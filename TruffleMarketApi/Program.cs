@@ -46,4 +46,10 @@ app.MapPost("/items", async (GridRequestModel gridRequest, IItemService itemServ
 app.MapPost("/item", async (ItemCreateModel model, IItemService itemService) => 
     await itemService.Offer(model)).RequireAuthorization();
 
+app.MapGet("/item/{itemId}", async (int itemId, IItemService itemService) =>
+    await itemService.GetItemInfo(itemId));
+
+app.MapPut("/item/{itemId}/bid", async (int itemId, ItemBidModel bidModel, IItemService itemService) =>
+    await itemService.BidforItem(itemId, bidModel));
+
 app.Run();

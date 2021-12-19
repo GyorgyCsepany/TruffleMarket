@@ -52,7 +52,7 @@ namespace TruffleMarketApi.Services.Item
                     Origin = i.Origin,
                     PickingDate = i.PickingDate,
                     Certificated = i.Certificated,
-                    Expiration =  i.Expiration,
+                    Expiration = i.Expiration,
                     SellerName = i.Seller.Name,
                     BuyerName = i.Buyer.Name,
                 })
@@ -76,7 +76,7 @@ namespace TruffleMarketApi.Services.Item
                 PickingDate = itemCreateModel.PickingDate,
                 Certificated = itemCreateModel.Certificated,
                 Expiration = itemCreateModel.Expiration,
-                SellerId  = itemCreateModel.SellerId
+                SellerId = itemCreateModel.SellerId
             };
 
             _dBContext.Item.Add(newItem);
@@ -84,5 +84,38 @@ namespace TruffleMarketApi.Services.Item
 
             return newItem.ItemId;
         }
+
+        public async Task<ItemInfoModel> GetItemInfo(int itemId)
+        {
+            var item = await _dBContext.Item.Where(i => i.ItemId == itemId).Include(i => i.Seller).FirstOrDefaultAsync();
+
+            if (item is null)
+                return null;
+
+            var itemModel = new ItemInfoModel
+            {
+                Description = item.Description,
+                SellerRate = item.Seller.Rate,
+                BuyerName = item.Buyer?.Name
+            };
+
+            return itemModel;
+        }
+
+        public async Task<int> BidforItem(int itemId, ItemBidModel itemBidModel)
+        {   
+            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == itemId && itemBidModel.BidPrice > i.Price && i.Expiration > DateTimeOffset.UtcNow);
+
+            if (item is null)
+                Results.NotFound();
+
+            item.BuyerId = itemBidModel.BuyerId;
+            item.Price = itemBidModel.BidPrice;
+
+            await _dBContext.SaveChangesAsync();
+
+            return item.ItemId;
+        }
+
     }
 }
