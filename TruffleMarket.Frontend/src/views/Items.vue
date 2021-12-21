@@ -60,14 +60,14 @@ const gridColumns = [
 const getItems = async (newParams) => {
   gridRequest = { ...gridRequest, ...newParams };
 
-  const filterTruffle = gridRequest.columnFilters
-    ? gridRequest.columnFilters.truffle
-    : "";
-  const sortField = gridRequest.sort ? gridRequest.sort[0].field : "";
-  const sortType = gridRequest.sort ? gridRequest.sort[0].type : "";
+  // const filterTruffle = gridRequest.columnFilters
+  //   ? gridRequest.columnFilters.truffle
+  //   : "";
+  // const sortField = gridRequest.sort ? gridRequest.sort[0].field : "";
+  // const sortType = gridRequest.sort ? gridRequest.sort[0].type : "";
 
   const itemsResponse = await fetch(
-    `https:/trufflemarketapi.azurewebsites.net/items?page=${gridRequest.page}&perPage=${gridRequest.perPage}&filterTruffle=${filterTruffle}&sortField=${sortField}&sortType=${sortType}`,
+    `https:/trufflemarketapi.azurewebsites.net/items`,
     {
       method: "GET",
       headers: {
