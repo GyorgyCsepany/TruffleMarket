@@ -69,6 +69,9 @@ const getItems = async (newParams) => {
 
   const itemsResponse = await fetch(requestUrl, {
     method: "GET",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+    },
   });
 
   const itemsJson = await itemsResponse.json();
@@ -103,6 +106,9 @@ const onRowClick = async (item) => {
     `https://trufflemarketapi.azurewebsites.net/item/${item.row.itemId}`,
     {
       method: "GET",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
     }
   );
 
