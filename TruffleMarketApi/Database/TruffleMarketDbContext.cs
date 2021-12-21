@@ -10,7 +10,7 @@ namespace TruffleMarketApi.Database
         {
         }
 
-        public DbSet<Item> Item => Set<Item>();
+        public DbSet<ItemModel> Item => Set<ItemModel>();
         public DbSet<User> User => Set<User>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

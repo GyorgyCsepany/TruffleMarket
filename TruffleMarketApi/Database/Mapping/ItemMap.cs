@@ -4,9 +4,9 @@ using TruffleMarketApi.Database.Models;
 
 namespace TruffleMarketApi.Database.Mapping
 {
-    public class ItemMap : IEntityTypeConfiguration<Item>
+    public class ItemMap : IEntityTypeConfiguration<ItemModel>
     {
-        public void Configure(EntityTypeBuilder<Item> builder)
+        public void Configure(EntityTypeBuilder<ItemModel> builder)
         {
 
             builder.HasKey(i => i.ItemId);
@@ -15,7 +15,7 @@ namespace TruffleMarketApi.Database.Mapping
             builder.Property(i => i.ItemId).HasColumnName("ItemId");
             builder.Property(i => i.Truffle).HasColumnName("Truffle");
             builder.Property(i => i.Weight).HasColumnName("Weight");
-            builder.Property(i => i.Price).HasColumnName("Price");
+            builder.Property(i => i.Price).HasColumnName("Price").IsConcurrencyToken();
             builder.Property(i => i.Origin).HasColumnName("Origin");
             builder.Property(i => i.PickingDate).HasColumnName("PickingDate");
             builder.Property(i => i.Certificated).HasColumnName("Certificated");

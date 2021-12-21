@@ -6,7 +6,10 @@ import {
   GoodsFilled,
   CircleCheckFilled,
   CircleCloseFilled,
+  Briefcase,
 } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import "element-plus/es/components/message/style/css";
 import "vue-good-table-next/dist/vue-good-table-next.css";
 
 const gridColumns = [
@@ -84,9 +87,11 @@ let gridRequest = {
 };
 
 const biddingPrice = ref(0);
-
 const bidDialogVisible = ref(false);
 
+const batchBidFormRef = ref({});
+const batchBidDialogVisible = ref(false);
+const batchBidModel = ref({});
 const clickedItem = ref({});
 
 (async () => await getItems())();
@@ -118,6 +123,11 @@ const onRowClick = async (item) => {
   };
 };
 
+const onBatchBidButtonClick = () => {
+  batchBidDialogVisible.value = true;
+  batchBidModel.value.buyerId = loggedInUser.value.userId;
+};
+
 const makeABid = async () => {
   const bidResponse = await fetch(
     `https://trufflemarketapi.azurewebsites.net/item/${clickedItem.value.itemId}/bid`,
@@ -128,6 +138,7 @@ const makeABid = async () => {
         "Content-Type": "application/json;charset=utf-8",
       },
       body: JSON.stringify({
+        itemId: clickedItem.value.itemId,
         bidPrice: biddingPrice.value,
         buyerId: loggedInUser.value.userId,
       }),
@@ -140,10 +151,61 @@ const makeABid = async () => {
     console.log("Redirect to YOURBIDS!");
   }
 };
+
+const submitBatchBid = async () => {
+  batchBidFormRef.value.validate(async (valid) => {
+    if (valid) {
+      const batchBidResponse = await fetch(
+        `https://trufflemarketapi.azurewebsites.net/items/batch`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${loggedInUser.value.token}`,
+            "Content-Type": "application/json;charset=utf-8",
+          },
+          body: JSON.stringify(batchBidModel.value),
+        }
+      );
+      if (batchBidResponse.ok) {
+        const batchBidResponseJson = await batchBidResponse.json();
+        showBatchBidSuccess(batchBidResponseJson);
+      } else {
+        showBatchBidError();
+        console.log("Redirect to YOURBIDS!");
+      }
+    }
+    batchBidDialogVisible.value = false;
+  });
+};
+
+const showBatchBidError = () => {
+  ElMessage({
+    message: "Your batch bid can not executed. Try again later!",
+    type: "error",
+  });
+};
+
+const showBatchBidSuccess = (batchBidResponseJson) => {
+  ElMessage({
+    message: `Your bid for ${batchBidResponseJson.includedItemsId.length} items successfully. Total price: ${batchBidResponseJson.totalPrice} Total weight: ${batchBidResponseJson.totalWeight}`,
+    type: "success",
+  });
+};
+
+const resetBatchDialog = () => batchBidFormRef.value.resetFields();
 </script>
 
 <template>
   <div class="Items-container">
+    <el-button
+      class="Items-batchBidButton"
+      color="#2c394f"
+      width="20px"
+      type="primary"
+      :disabled="!loggedInUser"
+      @click="onBatchBidButtonClick"
+      >Batch bid</el-button
+    >
     <vue-good-table
       v-if="gridRows"
       mode="remote"
@@ -204,7 +266,6 @@ const makeABid = async () => {
           :precision="2"
           :step="0.01"
           :min="clickedItem.price + 0.01"
-          controls-position="left"
           size="medium"
         />
         <el-button color="#2c394f" width="20px" type="primary" @click="makeABid"
@@ -213,10 +274,117 @@ const makeABid = async () => {
       >
       <template v-else #footer> To make a bid, please log in first!</template>
     </el-dialog>
+    <el-dialog v-model="batchBidDialogVisible" @close="resetBatchDialog">
+      <template #title>
+        <el-icon class="Items-headerIcon"><briefcase /></el-icon>
+        <h1>Batch bid</h1>
+      </template>
+      <el-form ref="batchBidFormRef" :model="batchBidModel">
+        <el-form-item
+          label="Truffle"
+          prop="truffle"
+          :rules="[
+            {
+              required: true,
+              message: 'Please select the type of truffle',
+              trigger: 'blur',
+            },
+          ]"
+        >
+          <el-select
+            v-model="batchBidModel.truffle"
+            placeholder="Select a type of truffle"
+          >
+            <el-option label="Black" value="Black" />
+            <el-option label="White" value="White" />
+            <el-option label="Garlic" value="Garlic" />
+            <el-option label="Burgundy" value="Burgundy" />
+          </el-select>
+        </el-form-item>
+        <label>{{
+          `Max total price: ${
+            batchBidModel.maxTotalPrice ? batchBidModel.maxTotalPrice : ""
+          }`
+        }}</label>
+        <el-form-item
+          prop="maxTotalPrice"
+          :rules="[
+            {
+              required: true,
+              message: 'Please give a max amount you will bid',
+              trigger: 'blur',
+            },
+          ]"
+          ><el-slider
+            v-model="batchBidModel.maxTotalPrice"
+            :step="0.01"
+            :max="1000"
+          ></el-slider
+        ></el-form-item>
+        <label>{{
+          `Min total weight: ${
+            batchBidModel.minTotalWeight ? batchBidModel.minTotalWeight : ""
+          }`
+        }}</label>
+        <el-form-item
+          prop="minTotalWeight"
+          :rules="[
+            {
+              required: true,
+              message: 'Please give a min weight you will receive',
+              trigger: 'blur',
+            },
+          ]"
+          ><el-slider
+            v-model="batchBidModel.minTotalWeight"
+            :max="1000"
+          ></el-slider
+        ></el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button
+          color="#2c394f"
+          width="20px"
+          type="primary"
+          @click="submitBatchBid"
+          >Submit batch bid</el-button
+        >
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <style>
+.Items-batchBidButton {
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.Items-container .el-slider {
+  padding-left: 10px;
+}
+
+.Items-container .el-slider__bar {
+  background-color: #2c394f;
+}
+
+.Items-container .el-slider__button {
+  border: solid 2px #2c394f;
+}
+
+.Items-container .el-slider__runway {
+  background-color: white;
+}
+
+.Items-container .el-form-item__label,
+.Items-container label {
+  font-weight: bold;
+  color: #2c394f;
+  font-size: 16px;
+  padding-right: 40px;
+}
+
 .Items-container .vgt-table tr:hover td {
   background-color: rgb(39, 41, 43);
   cursor: pointer;

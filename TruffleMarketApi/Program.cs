@@ -49,7 +49,13 @@ app.MapPost("/item", async (ItemCreateModel model, IItemService itemService) =>
 app.MapGet("/item/{itemId}", async (int itemId, IItemService itemService) =>
     await itemService.GetItemInfo(itemId));
 
-app.MapPut("/item/{itemId}/bid", async (int itemId, ItemBidModel bidModel, IItemService itemService) =>
-    await itemService.BidforItem(itemId, bidModel));
+app.MapPut("/item/{itemId}/bid", async (ItemBidModel bidModel, IItemService itemService) =>
+    await itemService.BidforItem(bidModel)).RequireAuthorization();
+
+app.MapPut("/items/batch", async (ItemBatchModel butchModel, IItemService itemService) =>
+{
+    var model = await itemService.BatchBid(butchModel);
+    return model is null ? Results.NotFound() : Results.Ok(model);
+});
 
 app.Run();

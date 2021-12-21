@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TruffleMarketApi.Database;
+using TruffleMarketApi.Database.Models;
 
 namespace TruffleMarketApi.Services.Item
 {
@@ -27,11 +28,11 @@ namespace TruffleMarketApi.Services.Item
 
                 if (gridRequest.Sort.FirstOrDefault().Type == "desc")
                 {
-                    queryable = queryable.OrderByDescending(item => EF.Property<Database.Models.Item>(item, formattedSortProperty));
+                    queryable = queryable.OrderByDescending(item => EF.Property<Database.Models.ItemModel>(item, formattedSortProperty));
                 }
                 else
                 {
-                    queryable = queryable.OrderBy(item => EF.Property<Database.Models.Item>(item, formattedSortProperty));
+                    queryable = queryable.OrderBy(item => EF.Property<Database.Models.ItemModel>(item, formattedSortProperty));
                 }
             }
 
@@ -67,7 +68,7 @@ namespace TruffleMarketApi.Services.Item
 
         public async Task<int> Offer(ItemCreateModel itemCreateModel)
         {
-            Database.Models.Item newItem = new()
+            ItemModel newItem = new()
             {
                 Truffle = itemCreateModel.Truffle,
                 Weight = itemCreateModel.Weight,
@@ -102,19 +103,97 @@ namespace TruffleMarketApi.Services.Item
             return itemModel;
         }
 
-        public async Task<int> BidforItem(int itemId, ItemBidModel itemBidModel)
-        {   
-            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == itemId && itemBidModel.BidPrice > i.Price && i.Expiration > DateTimeOffset.UtcNow);
+        public async Task<int?> BidforItem(ItemBidModel itemBidModel)
+        {
+            using (_dBContext)
+            {
+                var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == itemBidModel.ItemId && itemBidModel.BidPrice > i.Price && i.Expiration > DateTimeOffset.UtcNow);
 
-            if (item is null)
-                Results.NotFound();
+                if (item is null)
+                    return null;
 
-            item.BuyerId = itemBidModel.BuyerId;
-            item.Price = itemBidModel.BidPrice;
+                item.BuyerId = itemBidModel.BuyerId;
+                item.Price = itemBidModel.BidPrice;
+
+                await _dBContext.SaveChangesAsync();
+
+                return item.ItemId;
+            }
+        }
+
+        public async Task<ItemKnapSackResultModel> BatchBid(ItemBatchModel itemButchModel)
+        {
+            var items = await _dBContext.Item.Where(i => i.Truffle == itemButchModel.Truffle && i.Expiration > DateTimeOffset.UtcNow && i.BuyerId != itemButchModel.BuyerId).ToListAsync();
+            var itemCount = items.Count;
+
+            var maxCapacity = (int) (itemButchModel.MaxTotalPrice * 100);
+
+            var matrix = KnapSack(maxCapacity, itemCount, items);
+            var maxTotalWeight = matrix[itemCount, maxCapacity];
+
+            if (maxTotalWeight < itemButchModel.MinTotalWeight)
+                return null;
+
+            var resultModel = await UpdateKnapSackItems(maxCapacity, itemCount, matrix, itemButchModel.BuyerId, items);
+
+            resultModel.TotalWeight = maxTotalWeight;
+
+            return resultModel;
+        }
+
+
+        private int[,] KnapSack(int maxCapacity, int itemCount, List<ItemModel> items)
+        {
+            int[,] matrix = new int[itemCount + 1, maxCapacity + 1];
+
+            for (int i = 1; i <= itemCount; i++)
+            {
+                for (int w = 1; w <= maxCapacity; w++)
+                {
+                    var currentItem = items[i - 1];
+                    var currentItemPrice = (int) (currentItem.Price * 100) + 1; 
+
+                    if (currentItemPrice <= w)
+                    {
+                        matrix[i, w] = Math.Max(currentItem.Weight + matrix[i - 1, w - currentItemPrice], matrix[i - 1, w]);
+                    }
+                    else
+                    {
+                        matrix[i, w] = matrix[i - 1, w];
+                    }
+                }
+            }
+
+            return matrix;
+        }
+
+        private async Task<ItemKnapSackResultModel> UpdateKnapSackItems(int maxCapacity, int itemCount, int[,] matrix, int BuyerId, List<ItemModel> items)
+        {
+            int i = itemCount;
+            int j = maxCapacity;
+            var resultModel = new ItemKnapSackResultModel();  
+
+            while (i > 0 && j > 0)
+            {
+                if (matrix[i, j] != matrix[i - 1, j])
+                {
+                    var includedItem = items[i - 1];
+
+                    includedItem.BuyerId = BuyerId;
+                    includedItem.Price += 0.01;
+
+                    resultModel.IncludedItemsId.Add(includedItem.ItemId);
+                    resultModel.TotalPrice += includedItem.Price;
+
+                    j -= (int) (includedItem.Price * 100);
+                }
+
+                i--;
+            }
 
             await _dBContext.SaveChangesAsync();
 
-            return item.ItemId;
+            return resultModel;
         }
 
     }

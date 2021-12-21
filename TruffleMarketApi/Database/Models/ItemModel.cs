@@ -1,6 +1,6 @@
 ﻿namespace TruffleMarketApi.Database.Models
 {
-    public class Item
+    public class ItemModel
     {
         public int ItemId { get; set; }
         public string Truffle { get; set; }
