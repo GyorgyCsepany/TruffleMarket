@@ -2,7 +2,7 @@
 {
     public interface IItemService
     {
-        Task<GridResponseModel> GetItemsForGrid(GridRequestModel gridRequest);
+        Task<GridResponseModel> GetItemsForGrid(string filterTruffle, string sortField, string sortType, int page, int perPage);
         Task<int> Offer(ItemCreateModel itemCreateModel);
         Task<ItemInfoModel> GetItemInfo(int itemId);
         Task<int?> BidforItem(ItemBidModel itemBidModel);

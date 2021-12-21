@@ -13,34 +13,32 @@ namespace TruffleMarketApi.Services.Item
             _dBContext = dBContext;
         }
 
-        public async Task<GridResponseModel> GetItemsForGrid(GridRequestModel gridRequest)
+        public async Task<GridResponseModel> GetItemsForGrid(string filterTruffle, string sortField, string sortType, int page, int perPage)
         {
-            var filteredTruffle = gridRequest.ColumnFilters?.Truffle;
-            var queryable = _dBContext.Item.Where(item => string.IsNullOrEmpty(filteredTruffle) || item.Truffle == filteredTruffle);
+            var queryable = _dBContext.Item.Where(item => string.IsNullOrEmpty(filterTruffle) || item.Truffle == filterTruffle);
 
             var totalCount = await queryable.CountAsync();
 
-
-            if (gridRequest.Sort != null && gridRequest.Sort.FirstOrDefault().Type != "none")
+            if (!string.IsNullOrEmpty(sortField) && sortType != "none")
             {
-                var sortProperty = gridRequest.Sort.FirstOrDefault().Field;
+                var sortProperty = sortField;
                 var formattedSortProperty = Char.ToUpperInvariant(sortProperty[0]) + sortProperty[1..];
 
-                if (gridRequest.Sort.FirstOrDefault().Type == "desc")
+                if (sortType == "desc")
                 {
-                    queryable = queryable.OrderByDescending(item => EF.Property<Database.Models.ItemModel>(item, formattedSortProperty));
+                    queryable = queryable.OrderByDescending(item => EF.Property<ItemModel>(item, formattedSortProperty));
                 }
                 else
                 {
-                    queryable = queryable.OrderBy(item => EF.Property<Database.Models.ItemModel>(item, formattedSortProperty));
+                    queryable = queryable.OrderBy(item => EF.Property<ItemModel>(item, formattedSortProperty));
                 }
             }
 
-            if (totalCount > gridRequest.PerPage)
+            if (totalCount > perPage)
             {
                 queryable = queryable
-                    .Skip((gridRequest.Page - 1) * gridRequest.PerPage)
-                    .Take(gridRequest.PerPage);
+                    .Skip((page - 1) * perPage)
+                    .Take(perPage);
             }
 
             var rows = await queryable
@@ -53,9 +51,7 @@ namespace TruffleMarketApi.Services.Item
                     Origin = i.Origin,
                     PickingDate = i.PickingDate,
                     Certificated = i.Certificated,
-                    Expiration = i.Expiration,
-                    SellerName = i.Seller.Name,
-                    BuyerName = i.Buyer.Name,
+                    Expiration = i.Expiration
                 })
                 .ToListAsync();
 
@@ -97,7 +93,8 @@ namespace TruffleMarketApi.Services.Item
             {
                 Description = item.Description,
                 SellerRate = item.Seller.Rate,
-                BuyerName = item.Buyer?.Name
+                BuyerName = item.Buyer?.Name,
+                SellerName = item.Seller.Name
             };
 
             return itemModel;
@@ -105,20 +102,17 @@ namespace TruffleMarketApi.Services.Item
 
         public async Task<int?> BidforItem(ItemBidModel itemBidModel)
         {
-            using (_dBContext)
-            {
-                var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == itemBidModel.ItemId && itemBidModel.BidPrice > i.Price && i.Expiration > DateTimeOffset.UtcNow);
+            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == itemBidModel.ItemId && itemBidModel.BidPrice > i.Price && i.Expiration > DateTimeOffset.UtcNow);
 
-                if (item is null)
-                    return null;
+            if (item is null)
+                return null;
 
-                item.BuyerId = itemBidModel.BuyerId;
-                item.Price = itemBidModel.BidPrice;
+            item.BuyerId = itemBidModel.BuyerId;
+            item.Price = itemBidModel.BidPrice;
 
-                await _dBContext.SaveChangesAsync();
+            await _dBContext.SaveChangesAsync();
 
-                return item.ItemId;
-            }
+            return item.ItemId;
         }
 
         public async Task<ItemKnapSackResultModel> BatchBid(ItemBatchModel itemButchModel)

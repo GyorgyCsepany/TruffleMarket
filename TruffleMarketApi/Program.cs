@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TruffleMarketApi.Database;
 using TruffleMarketApi.Services.Authentication;
@@ -39,9 +40,13 @@ app.MapPost("/user", async (UserLoginOrRegisterModel loginOrRegisterModel, IUser
     return user is null ? Results.StatusCode(401) : Results.Ok(user);
 });
 
-
-app.MapPost("/items", async (GridRequestModel gridRequest, IItemService itemService ) =>
-    await itemService.GetItemsForGrid(gridRequest));
+app.MapGet("/items", async ([FromQuery(Name = "FilterTruffle")] string filterTruffle,
+                            [FromQuery(Name = "sortField")] string sortField,
+                            [FromQuery(Name = "sortType")] string sortType,
+                            [FromQuery(Name = "page")] int page,
+                            [FromQuery(Name = "perPage")] int perPage,
+                            IItemService itemService ) =>
+    await itemService.GetItemsForGrid(filterTruffle, sortField, sortType, page, perPage));
 
 app.MapPost("/item", async (ItemCreateModel model, IItemService itemService) => 
     await itemService.Offer(model)).RequireAuthorization();

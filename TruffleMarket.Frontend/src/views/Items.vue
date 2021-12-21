@@ -55,24 +55,22 @@ const gridColumns = [
     dateInputFormat: "yyyy-MM-dd'T'HH:mm:ssXXX",
     dateOutputFormat: "yyyy-MM-dd",
   },
-  {
-    label: "Seller",
-    field: "sellerName",
-  },
 ];
 
 const getItems = async (newParams) => {
   gridRequest = { ...gridRequest, ...newParams };
-  const itemsResponse = await fetch(
-    "https://trufflemarketapi.azurewebsites.net/items",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(gridRequest),
-    }
-  );
+
+  const requestUrl = `https://localhost:7198/items?page=${
+    gridRequest.page
+  }&perPage=${gridRequest.perPage}&filterTruffle=${
+    gridRequest.columnFilters ? gridRequest.columnFilters.truffle : ""
+  }&sortField=${gridRequest.sort ? gridRequest.sort[0].field : ""}&sortType=${
+    gridRequest.sort ? gridRequest.sort[0].type : ""
+  }`;
+
+  const itemsResponse = await fetch(requestUrl, {
+    method: "GET",
+  });
   const itemsJson = await itemsResponse.json();
   gridRows.value = itemsJson.rows;
   rowCount.value = itemsJson.totalRows;
