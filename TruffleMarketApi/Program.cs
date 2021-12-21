@@ -34,8 +34,8 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 
 
-app.MapPost("/user", async (UserLoginOrRegisterModel loginOrRegisterModel, IUserService userService) => {
-
+app.MapPost("/user", async (UserLoginOrRegisterModel loginOrRegisterModel, IUserService userService) =>
+{
     var user = await userService.LoginOrRegister(loginOrRegisterModel);
     return user is null ? Results.StatusCode(401) : Results.Ok(user);
 });
@@ -61,6 +61,6 @@ app.MapPut("/items/batch", async (ItemBatchModel butchModel, IItemService itemSe
 {
     var model = await itemService.BatchBid(butchModel);
     return model is null ? Results.NotFound() : Results.Ok(model);
-});
+}).RequireAuthorization();
 
 app.Run();

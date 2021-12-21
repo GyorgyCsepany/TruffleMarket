@@ -13,6 +13,7 @@
         public string Description { get; set; }
         public int SellerId { get; set; }
         public int? BuyerId { get; set; }
+        public bool ClosedBySeller { get; set; }
 
         public User Seller { get; set; }
         public User Buyer { get; set; }

@@ -23,6 +23,7 @@ namespace TruffleMarketApi.Database.Mapping
             builder.Property(i => i.Description).HasColumnName("Description");
             builder.Property(i => i.SellerId).HasColumnName("SellerId");
             builder.Property(i => i.BuyerId).HasColumnName("BuyerId");
+            builder.Property(i => i.ClosedBySeller).HasColumnName("ClosedBySeller");
 
             builder
                 .HasOne(i => i.Seller)

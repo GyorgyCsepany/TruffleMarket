@@ -174,7 +174,7 @@ namespace TruffleMarketApi.Services.Item
                     var includedItem = items[i - 1];
 
                     includedItem.BuyerId = BuyerId;
-                    includedItem.Price += 0.01;
+                    includedItem.Price = Math.Round(includedItem.Price + 0.01, 2);
 
                     resultModel.IncludedItemsId.Add(includedItem.ItemId);
                     resultModel.TotalPrice += includedItem.Price;
