@@ -14,14 +14,17 @@ const handleMenuItemSelect = (menuIndex) => {
     case "2":
       router.push({ name: "UserBids", params: { userId: userId } });
       break;
-    case "5":
-      router.push({ name: "LoginOrRegister" });
+    case "3":
+      router.push({ name: "UserOffers", params: { userId: userId } });
       break;
     case "4":
       router.push({
         name: "NewOffer",
         params: { userId: userId },
       });
+      break;
+    case "5":
+      router.push({ name: "LoginOrRegister" });
       break;
   }
 };

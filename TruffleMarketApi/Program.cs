@@ -66,7 +66,14 @@ app.MapPut("/items/batch", async (ItemBatchModel butchModel, IItemService itemSe
 app.MapPut("/items/bid/close", async (BidCloseModel closeModel, IItemService itemService) =>
     await itemService.CloseBid(closeModel)).RequireAuthorization();
 
+app.MapPut("/items/offer/close", async (OfferCloseModel closeModel, IItemService itemService) =>
+    await itemService.CloseOffer(closeModel)).RequireAuthorization();
+
+
 app.MapGet("/items/buyer/{buyerId}", async (int buyerId, IItemService itemService) =>
     await itemService.GetItemsForBuyer(buyerId)).RequireAuthorization();
+
+app.MapGet("/items/seller/{sellerId}", async (int sellerId, IItemService itemService) =>
+    await itemService.GetItemsForSeller(sellerId)).RequireAuthorization();
 
 app.Run();

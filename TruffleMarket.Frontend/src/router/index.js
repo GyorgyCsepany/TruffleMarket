@@ -3,6 +3,7 @@ import Items from "../views/Items.vue";
 import NewOffer from "../views/NewOffer.vue";
 import UserPage from "../views/UserPage.vue";
 import UserBids from "../views/UserBids.vue";
+import UserOffers from "../views/UserOffers.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,14 @@ const router = createRouter({
       name: "UserBids",
       path: "/user/:userId?/bids",
       component: UserBids,
+      meta: {
+        auth: true,
+      },
+    },
+    {
+      name: "UserOffers",
+      path: "/user/:userId?/offers",
+      component: UserOffers,
       meta: {
         auth: true,
       },

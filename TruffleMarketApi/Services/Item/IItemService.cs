@@ -6,8 +6,10 @@
         Task<int> Offer(ItemCreateModel itemCreateModel);
         Task<ItemInfoModel> GetItemInfo(int itemId);
         Task<List<BidRowModel>> GetItemsForBuyer(int buyerId);
+        Task<List<OfferRowModel>> GetItemsForSeller(int sellerId);
         Task<int?> BidforItem(ItemBidModel itemBidModel);
         Task<ItemKnapSackResultModel> BatchBid(ItemBatchModel itemButchModel);
         Task CloseBid(BidCloseModel closeModel);
+        Task CloseOffer(OfferCloseModel closeModel);
     }
 }

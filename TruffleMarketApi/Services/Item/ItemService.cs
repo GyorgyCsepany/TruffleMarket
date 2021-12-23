@@ -139,7 +139,6 @@ namespace TruffleMarketApi.Services.Item
                 .ToListAsync();
 
             return buyerBids;
-
         }
 
 
@@ -166,6 +165,45 @@ namespace TruffleMarketApi.Services.Item
             await _dBContext.SaveChangesAsync();
         }
 
+        public async Task<List<OfferRowModel>> GetItemsForSeller(int sellerId)
+        {
+            var buyerBids = await _dBContext.Item
+                .Where(i => i.SellerId == sellerId && !i.ClosedBySeller)
+                .Include(i => i.Buyer)
+                .Select(i => new OfferRowModel
+                {
+                    ItemId = i.ItemId,
+                    Truffle = i.Truffle,
+                    Weight = i.Weight,
+                    Price = i.Price,
+                    Expiration = i.Expiration,
+                    BuyerName = i.Buyer.Name,
+                    BuyerEmail = i.Buyer.Email,
+                    Status = i.Expiration <= DateTimeOffset.UtcNow ? i.BuyerId != null ? ItemStatus.Executed : ItemStatus.Failed : ItemStatus.Open
+                })
+                .ToListAsync();
+
+            return buyerBids;
+        }
+
+        public async Task CloseOffer(OfferCloseModel closeModel)
+        {
+            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == closeModel.ItemId && i.SellerId == closeModel.SellerId);
+
+            if (item is null)
+                return;
+
+            if (item.BuyerId is null || item.ClosedByBuyer)
+            {
+                _dBContext.Item.Remove(item);
+            }
+            else
+            {
+                item.ClosedBySeller = true;
+            }
+
+            await _dBContext.SaveChangesAsync();
+        }
 
         public async Task<ItemKnapSackResultModel> BatchBid(ItemBatchModel itemButchModel)
         {
