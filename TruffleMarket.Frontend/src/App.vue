@@ -6,9 +6,13 @@ const router = useRouter();
 
 const handleMenuItemSelect = (menuIndex) => {
   const user = localStorage.user && JSON.parse(localStorage.user);
+  const userId = user ? user.userId : undefined;
   switch (menuIndex) {
     case "1":
       router.push({ name: "Items" });
+      break;
+    case "2":
+      router.push({ name: "UserBids", params: { userId: userId } });
       break;
     case "5":
       router.push({ name: "LoginOrRegister" });
@@ -16,7 +20,7 @@ const handleMenuItemSelect = (menuIndex) => {
     case "4":
       router.push({
         name: "NewOffer",
-        params: { userId: user ? user.userId : undefined },
+        params: { userId: userId },
       });
       break;
   }

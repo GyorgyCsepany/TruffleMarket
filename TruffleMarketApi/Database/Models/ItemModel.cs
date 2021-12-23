@@ -14,8 +14,9 @@
         public int SellerId { get; set; }
         public int? BuyerId { get; set; }
         public bool ClosedBySeller { get; set; }
+        public bool ClosedByBuyer { get; set; }
 
-        public User Seller { get; set; }
-        public User Buyer { get; set; }
+        public virtual User  Seller { get; set; }
+        public virtual User  Buyer { get; set; }
     }
 }

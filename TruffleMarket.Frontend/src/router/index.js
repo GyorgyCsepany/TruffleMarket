@@ -23,6 +23,14 @@ const router = createRouter({
       },
     },
     {
+      name: "UserBids",
+      path: "/user/:userId?/bids",
+      component: UserBids,
+      meta: {
+        auth: true,
+      },
+    },
+    {
       name: "LoginOrRegister",
       path: "/login",
       component: UserPage,

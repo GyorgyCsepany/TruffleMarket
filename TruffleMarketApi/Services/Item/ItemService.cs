@@ -1,16 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TruffleMarketApi.Database;
 using TruffleMarketApi.Database.Models;
+using TruffleMarketApi.Services.User;
 
 namespace TruffleMarketApi.Services.Item
 {
     public class ItemService : IItemService
     {
         private readonly TruffleMarketDbContext _dBContext;
+        private readonly IUserService _userService;
 
-        public ItemService(TruffleMarketDbContext dBContext)
+        public ItemService(TruffleMarketDbContext dBContext, IUserService userService)
         {
             _dBContext = dBContext;
+            _userService = userService;
         }
 
         public async Task<GridResponseModel> GetItemsForGrid(string filterTruffle, string sortField, string sortType, int page, int perPage)
@@ -114,6 +117,55 @@ namespace TruffleMarketApi.Services.Item
 
             return item.ItemId;
         }
+
+        public async Task<List<BidRowModel>> GetItemsForBuyer(int buyerId)
+        {
+            var buyerBids = await _dBContext.Item
+                .Where(i => i.BuyerId == buyerId && !i.ClosedByBuyer)
+                .Include(i => i.Seller)
+                .Select(i => new BidRowModel
+                {
+                    ItemId = i.ItemId,
+                    Truffle = i.Truffle,
+                    Weight = i.Weight,
+                    Price = i.Price,
+                    Expiration = i.Expiration,
+                    SellerId = i.SellerId,
+                    SellerName = i.Seller.Name,
+                    SellerEmail = i.Seller.Email,
+                    SellerRate = i.Seller.Rate,
+                    IsExecuted = i.ClosedBySeller || i.Expiration <= DateTimeOffset.UtcNow
+                })
+                .ToListAsync();
+
+            return buyerBids;
+
+        }
+
+
+        public async Task CloseBid(BidCloseModel closeModel)
+        {
+            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == closeModel.ItemId && i.BuyerId == closeModel.BuyerId);
+
+            if (item is null)
+                return;
+
+            if (closeModel.SellerRate != null)
+                await _userService.RateUser(closeModel.SellerId, (double)closeModel.SellerRate);
+
+
+            if (item.ClosedBySeller)
+            {
+                _dBContext.Item.Remove(item);
+            }
+            else
+            { 
+                item.ClosedByBuyer = true;
+            }
+
+            await _dBContext.SaveChangesAsync();
+        }
+
 
         public async Task<ItemKnapSackResultModel> BatchBid(ItemBatchModel itemButchModel)
         {

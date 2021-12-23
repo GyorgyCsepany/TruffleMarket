@@ -55,5 +55,22 @@ namespace TruffleMarketApi.Services.User
 
             return userProfile;
         }
+
+        public async Task<int?> RateUser(int userId, double newRate)
+        {
+            var user = await _dBContext.User.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user is null)
+                return null;
+
+            var increasedRateCount = user.RateCount + 1;
+
+            user.Rate = ((user.Rate * user.RateCount) + newRate) / increasedRateCount;
+            user.RateCount = increasedRateCount;
+
+            await _dBContext.SaveChangesAsync();
+
+            return user.UserId;
+        }
     }
 }

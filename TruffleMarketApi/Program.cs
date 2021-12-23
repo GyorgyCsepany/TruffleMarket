@@ -63,4 +63,10 @@ app.MapPut("/items/batch", async (ItemBatchModel butchModel, IItemService itemSe
     return model is null ? Results.NotFound() : Results.Ok(model);
 }).RequireAuthorization();
 
+app.MapPut("/items/bid/close", async (BidCloseModel closeModel, IItemService itemService) =>
+    await itemService.CloseBid(closeModel)).RequireAuthorization();
+
+app.MapGet("/items/buyer/{buyerId}", async (int buyerId, IItemService itemService) =>
+    await itemService.GetItemsForBuyer(buyerId)).RequireAuthorization();
+
 app.Run();

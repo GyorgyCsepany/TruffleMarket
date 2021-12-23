@@ -7,7 +7,7 @@
         public string Password { get; set; }
         public bool IsAdmin { get; set; } = false;
         public string Email { get; set; }
-        public double? Rate { get; set; }
+        public double Rate { get; set; } = 0;
         public int RateCount { get; set; } = 0;
     }
 }
