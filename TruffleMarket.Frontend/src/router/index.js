@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Items from "../views/Items.vue";
 import NewOffer from "../views/NewOffer.vue";
 import UserPage from "../views/UserPage.vue";
+import UserBids from "../views/UserBids.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
