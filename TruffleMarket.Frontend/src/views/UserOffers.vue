@@ -27,7 +27,7 @@ const showErrorClose = () => {
 
 const getOffers = async () => {
   const offersResponse = await fetch(
-    `https://localhost:7198/items/seller/${loggedInUser.userId}`,
+    `https://trufflemarketapi.azurewebsites.net/items/seller/${loggedInUser.userId}`,
     {
       method: "GET",
       headers: {
@@ -44,7 +44,7 @@ const getOffers = async () => {
 const onClickClose = async (index, row) => {
   console.log();
   const closeResponse = await fetch(
-    `https://localhost:7198/items/offer/close`,
+    `https://trufflemarketapi.azurewebsites.net/items/offer/close`,
     {
       method: "PUT",
       headers: {
