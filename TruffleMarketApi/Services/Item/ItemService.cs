@@ -76,7 +76,7 @@ namespace TruffleMarketApi.Services.Item
                 PickingDate = itemCreateModel.PickingDate,
                 Certificated = itemCreateModel.Certificated,
                 Expiration = itemCreateModel.Expiration,
-                SellerId = itemCreateModel.SellerId
+                SellerId = _userService.UserProfil.UserId
             };
 
             _dBContext.Item.Add(newItem);
@@ -110,7 +110,7 @@ namespace TruffleMarketApi.Services.Item
             if (item is null)
                 return null;
 
-            item.BuyerId = itemBidModel.BuyerId;
+            item.BuyerId = _userService.UserProfil.UserId;
             item.Price = itemBidModel.BidPrice;
 
             await _dBContext.SaveChangesAsync();
@@ -118,10 +118,10 @@ namespace TruffleMarketApi.Services.Item
             return item.ItemId;
         }
 
-        public async Task<List<BidRowModel>> GetItemsForBuyer(int buyerId)
+        public async Task<List<BidRowModel>> GetItemsForBuyer()
         {
             var buyerBids = await _dBContext.Item
-                .Where(i => i.BuyerId == buyerId && !i.ClosedByBuyer)
+                .Where(i => i.BuyerId == _userService.UserProfil.UserId && !i.ClosedByBuyer)
                 .Include(i => i.Seller)
                 .Select(i => new BidRowModel
                 {
@@ -144,7 +144,7 @@ namespace TruffleMarketApi.Services.Item
 
         public async Task CloseBid(BidCloseModel closeModel)
         {
-            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == closeModel.ItemId && i.BuyerId == closeModel.BuyerId);
+            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == closeModel.ItemId && i.BuyerId == _userService.UserProfil.UserId);
 
             if (item is null)
                 return;
@@ -165,10 +165,10 @@ namespace TruffleMarketApi.Services.Item
             await _dBContext.SaveChangesAsync();
         }
 
-        public async Task<List<OfferRowModel>> GetItemsForSeller(int sellerId)
+        public async Task<List<OfferRowModel>> GetItemsForSeller()
         {
             var buyerBids = await _dBContext.Item
-                .Where(i => i.SellerId == sellerId && !i.ClosedBySeller)
+                .Where(i => i.SellerId == _userService.UserProfil.UserId && !i.ClosedBySeller)
                 .Include(i => i.Buyer)
                 .Select(i => new OfferRowModel
                 {
@@ -188,7 +188,7 @@ namespace TruffleMarketApi.Services.Item
 
         public async Task CloseOffer(OfferCloseModel closeModel)
         {
-            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == closeModel.ItemId && i.SellerId == closeModel.SellerId);
+            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == closeModel.ItemId && i.SellerId == _userService.UserProfil.UserId);
 
             if (item is null)
                 return;
@@ -207,7 +207,8 @@ namespace TruffleMarketApi.Services.Item
 
         public async Task<ItemKnapSackResultModel> BatchBid(ItemBatchModel itemButchModel)
         {
-            var items = await _dBContext.Item.Where(i => i.Truffle == itemButchModel.Truffle && i.Expiration > DateTimeOffset.UtcNow && i.BuyerId != itemButchModel.BuyerId).ToListAsync();
+            var buyerId = _userService.UserProfil.UserId;
+            var items = await _dBContext.Item.Where(i => i.Truffle == itemButchModel.Truffle && i.Expiration > DateTimeOffset.UtcNow && i.BuyerId != buyerId).ToListAsync();
             var itemCount = items.Count;
 
             var maxCapacity = (int) (itemButchModel.MaxTotalPrice * 100);
@@ -218,7 +219,7 @@ namespace TruffleMarketApi.Services.Item
             if (maxTotalWeight < itemButchModel.MinTotalWeight)
                 return null;
 
-            var resultModel = await UpdateKnapSackItems(maxCapacity, itemCount, matrix, itemButchModel.BuyerId, items);
+            var resultModel = await UpdateKnapSackItems(maxCapacity, itemCount, matrix, buyerId, items);
 
             resultModel.TotalWeight = maxTotalWeight;
 

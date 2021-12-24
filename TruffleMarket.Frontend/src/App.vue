@@ -5,23 +5,18 @@ import { UserFilled } from "@element-plus/icons-vue";
 const router = useRouter();
 
 const handleMenuItemSelect = (menuIndex) => {
-  const user = localStorage.user && JSON.parse(localStorage.user);
-  const userId = user ? user.userId : undefined;
   switch (menuIndex) {
     case "1":
       router.push({ name: "Items" });
       break;
     case "2":
-      router.push({ name: "UserBids", params: { userId: userId } });
+      router.push({ name: "UserBids" });
       break;
     case "3":
-      router.push({ name: "UserOffers", params: { userId: userId } });
+      router.push({ name: "UserOffers" });
       break;
     case "4":
-      router.push({
-        name: "NewOffer",
-        params: { userId: userId },
-      });
+      router.push({ name: "NewOffer" });
       break;
     case "5":
       router.push({ name: "LoginOrRegister" });

@@ -18,7 +18,7 @@ const router = createRouter({
     },
     {
       name: "NewOffer",
-      path: "/user/:userId?/offer",
+      path: "/user/newoffer",
       component: NewOffer,
       meta: {
         auth: true,
@@ -26,7 +26,7 @@ const router = createRouter({
     },
     {
       name: "UserBids",
-      path: "/user/:userId?/bids",
+      path: "/user/mybids",
       component: UserBids,
       meta: {
         auth: true,
@@ -34,7 +34,7 @@ const router = createRouter({
     },
     {
       name: "UserOffers",
-      path: "/user/:userId?/offers",
+      path: "/user/myoffers",
       component: UserOffers,
       meta: {
         auth: true,
@@ -42,7 +42,7 @@ const router = createRouter({
     },
     {
       name: "LoginOrRegister",
-      path: "/login",
+      path: "/user",
       component: UserPage,
       meta: {
         auth: false,
@@ -52,9 +52,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const user = localStorage.user;
   if (to.matched.some((res) => res.meta.auth)) {
-    if (user) {
+    if (localStorage.token) {
       next();
       return;
     }

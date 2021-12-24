@@ -8,7 +8,7 @@ import {
   CircleCloseFilled,
 } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-const loggedInUser = localStorage.user && JSON.parse(localStorage.user);
+const token = localStorage.token;
 const tableData = ref();
 
 const showSuccesClose = () => {
@@ -26,34 +26,29 @@ const showErrorClose = () => {
 };
 
 const getOffers = async () => {
-  const offersResponse = await fetch(
-    `https://trufflemarketapi.azurewebsites.net/items/seller/${loggedInUser.userId}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${loggedInUser.token}`,
-        "Content-Type": "application/json;charset=utf-8",
-      },
-    }
-  );
+  const offersResponse = await fetch(`https://trufflemarketapi.azurewebsites.net/user/offers`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json;charset=utf-8",
+    },
+  });
   tableData.value = await offersResponse.json();
 };
 
 (async () => await getOffers())();
 
 const onClickClose = async (index, row) => {
-  console.log();
   const closeResponse = await fetch(
     `https://trufflemarketapi.azurewebsites.net/items/offer/close`,
     {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${loggedInUser.token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json;charset=utf-8",
       },
       body: JSON.stringify({
         itemId: row.itemId,
-        sellerId: loggedInUser.userId,
       }),
     }
   );

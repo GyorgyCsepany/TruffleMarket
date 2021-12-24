@@ -82,7 +82,7 @@ const getItems = async (newParams) => {
   rowCount.value = itemsJson.totalRows;
 };
 
-const loggedInUser = ref(localStorage.user && JSON.parse(localStorage.user));
+const token = localStorage.token;
 const gridRows = ref(null);
 const rowCount = ref(0);
 let gridRequest = {
@@ -129,7 +129,6 @@ const onRowClick = async (item) => {
 
 const onBatchBidButtonClick = () => {
   batchBidDialogVisible.value = true;
-  batchBidModel.value.buyerId = loggedInUser.value.userId;
 };
 
 const makeABid = async () => {
@@ -138,21 +137,18 @@ const makeABid = async () => {
     {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${loggedInUser.value.token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json;charset=utf-8",
       },
       body: JSON.stringify({
         itemId: clickedItem.value.itemId,
-        bidPrice: biddingPrice.value,
-        buyerId: loggedInUser.value.userId,
+        bidPrice: biddingPrice.value
       }),
     }
   );
 
   if (bidResponse.ok) {
     bidDialogVisible.value = false;
-  } else {
-    console.log("Redirect to YOURBIDS!");
   }
 };
 
@@ -164,7 +160,7 @@ const submitBatchBid = async () => {
         {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${loggedInUser.value.token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json;charset=utf-8",
           },
           body: JSON.stringify(batchBidModel.value),
@@ -175,7 +171,6 @@ const submitBatchBid = async () => {
         showBatchBidSuccess(batchBidResponseJson);
       } else {
         showBatchBidError();
-        console.log("Redirect to YOURBIDS!");
       }
       batchBidDialogVisible.value = false;
     }
@@ -206,7 +201,7 @@ const resetBatchDialog = () => batchBidFormRef.value.resetFields();
       color="#2c394f"
       width="20px"
       type="primary"
-      :disabled="!loggedInUser"
+      :disabled="!token"
       @click="onBatchBidButtonClick"
       >Batch bid</el-button
     >
@@ -264,7 +259,7 @@ const resetBatchDialog = () => batchBidFormRef.value.resetFields();
           {{ clickedItem.description }}
         </el-descriptions-item>
       </el-descriptions>
-      <template v-if="loggedInUser" #footer>
+      <template v-if="token" #footer>
         <el-input-number
           v-model="biddingPrice"
           :precision="2"

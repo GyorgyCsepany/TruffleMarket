@@ -8,7 +8,7 @@ const router = useRouter();
 const userInput = ref({});
 const formRef = ref({});
 const isRegistration = ref(true);
-const loggedInUser = ref(localStorage.user && JSON.parse(localStorage.user));
+const user = ref(localStorage.user);
 
 const showError = () => {
   ElMessage({
@@ -25,8 +25,8 @@ const showSuccess = () => {
 };
 
 const logout = () => {
-  loggedInUser.value = null;
-  localStorage.removeItem("user");
+  user.value = null;
+  localStorage.clear();
 };
 
 const submitForm = () => {
@@ -48,7 +48,9 @@ const submitForm = () => {
 
       if (response.ok) {
         showSuccess();
-        localStorage.user = await response.text();
+        const responseJson =  await response.json();
+        localStorage.token = responseJson.token;
+        localStorage.user = responseJson.name;
         document.getElementsByClassName("el-menu-item")[0].click();
         router.push({ name: "Items" });
       } else {
@@ -99,8 +101,8 @@ const rules = ref({
 
 <template>
   <div class="UserPage-container">
-    <el-card v-if="loggedInUser" class="box-card">
-      <h2>Welcome {{ loggedInUser.name }}!</h2>
+    <el-card v-if="user" class="box-card">
+      <h2>Welcome {{user}}!</h2>
       <el-button color="#2c394f" type="primary" @click="logout"
         >Logout</el-button
       >

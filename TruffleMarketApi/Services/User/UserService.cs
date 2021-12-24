@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TruffleMarketApi.Database;
 using TruffleMarketApi.Services.Authentication;
 
@@ -49,9 +50,7 @@ namespace TruffleMarketApi.Services.User
                 IsAdmin = user.IsAdmin,
             };
 
-            var token = _jwtTokenService.GetToken(userProfile);
-
-            userProfile.Token = token;
+            userProfile.Token = _jwtTokenService.GetToken(userProfile);
 
             return userProfile;
         }
@@ -71,6 +70,31 @@ namespace TruffleMarketApi.Services.User
             await _dBContext.SaveChangesAsync();
 
             return user.UserId;
+        }
+
+        public UserProfileModel UserProfil
+        {
+            get
+            {
+                var token = _jwtTokenService.ReadToken();
+
+                if (token is null)
+                    return null;
+
+                var userId = int.Parse(token.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+                var name = token.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+                var role = token.Claims.First(c => c.Type == ClaimTypes.Role).Value;
+
+                var userProfile = new UserProfileModel
+                {
+                    UserId = userId,
+                    Name = name,
+                    IsAdmin = role == "Admin",
+
+                };
+
+                return userProfile;
+            }
         }
     }
 }

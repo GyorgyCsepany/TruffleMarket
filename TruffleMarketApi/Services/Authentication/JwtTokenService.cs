@@ -9,11 +9,13 @@ namespace TruffleMarketApi.Services.Authentication
 {
     public class JwtTokenService : IJwtTokenService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOptions<JwtAuthenticationConfig> _jwtAuthenticationConfig;
 
-        public JwtTokenService(IOptions<JwtAuthenticationConfig> jwtAuthenticationConfig)
+        public JwtTokenService(IHttpContextAccessor httpContextAccessor, IOptions<JwtAuthenticationConfig> jwtAuthenticationConfig)
         {
             _jwtAuthenticationConfig = jwtAuthenticationConfig;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public string GetToken(UserProfileModel model)
@@ -22,7 +24,7 @@ namespace TruffleMarketApi.Services.Authentication
             {
                 new Claim(ClaimTypes.Name, model.Name),
                 new Claim(ClaimTypes.NameIdentifier, model.UserId.ToString()),
-                new Claim(ClaimTypes.Role, model.IsAdmin ? "Administrator" : "User")
+                new Claim(ClaimTypes.Role, model.IsAdmin ? "Admin" : "User")
             };
 
             var secret = _jwtAuthenticationConfig.Value.Secret;
@@ -42,5 +44,20 @@ namespace TruffleMarketApi.Services.Authentication
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
+
+
+        public JwtSecurityToken ReadToken()
+        { 
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (string.IsNullOrEmpty(token))
+                return null;
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            return jwtToken;
+        }
+
     }
 }

@@ -13,8 +13,6 @@ const offer = ref({
   certificated: false,
 });
 
-const currentUser = JSON.parse(localStorage.user);
-
 const showError = () => {
   ElMessage({
     message: "Your offer could not be created! Please try again!",
@@ -37,13 +35,10 @@ const submitForm = () => {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${currentUser.token}`,
+            Authorization: `Bearer ${localStorage.token}`,
             "Content-Type": "application/json;charset=utf-8",
           },
-          body: JSON.stringify({
-            ...offer.value,
-            sellerId: currentUser.userId,
-          }),
+          body: JSON.stringify(offer.value),
         }
       );
 

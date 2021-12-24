@@ -9,6 +9,5 @@
         public DateTimeOffset PickingDate { get; set; }
         public bool Certificated { get; set; }
         public DateTimeOffset Expiration { get; set; }
-        public int SellerId { get; set; }
     }
 }

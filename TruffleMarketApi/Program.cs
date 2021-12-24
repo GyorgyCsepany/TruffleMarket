@@ -15,6 +15,9 @@ var connectionString = builder.Configuration.GetConnectionString("TruffleMarketD
 builder.Services.AddDbContext<TruffleMarketDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddTransient<IJwtTokenService, JwtTokenService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IItemService, ItemService>();
@@ -63,17 +66,16 @@ app.MapPut("/items/batch", async (ItemBatchModel butchModel, IItemService itemSe
     return model is null ? Results.NotFound() : Results.Ok(model);
 }).RequireAuthorization();
 
+app.MapGet("/user/bids", async (IItemService itemService) =>
+    await itemService.GetItemsForBuyer()).RequireAuthorization();
+
 app.MapPut("/items/bid/close", async (BidCloseModel closeModel, IItemService itemService) =>
     await itemService.CloseBid(closeModel)).RequireAuthorization();
 
+app.MapGet("/user/offers", async (IItemService itemService) =>
+    await itemService.GetItemsForSeller()).RequireAuthorization();
+
 app.MapPut("/items/offer/close", async (OfferCloseModel closeModel, IItemService itemService) =>
     await itemService.CloseOffer(closeModel)).RequireAuthorization();
-
-
-app.MapGet("/items/buyer/{buyerId}", async (int buyerId, IItemService itemService) =>
-    await itemService.GetItemsForBuyer(buyerId)).RequireAuthorization();
-
-app.MapGet("/items/seller/{sellerId}", async (int sellerId, IItemService itemService) =>
-    await itemService.GetItemsForSeller(sellerId)).RequireAuthorization();
 
 app.Run();

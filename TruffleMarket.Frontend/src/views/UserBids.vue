@@ -7,7 +7,7 @@ import {
   WarningFilled,
 } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-const loggedInUser = localStorage.user && JSON.parse(localStorage.user);
+const token = localStorage.token;
 const tableData = ref();
 const isCloseDialogOpen = ref(false);
 const closeRow = ref({});
@@ -28,11 +28,11 @@ const showErrorClose = () => {
 
 const getBids = async () => {
   const bidsResponse = await fetch(
-    `https://trufflemarketapi.azurewebsites.net/items/buyer/${loggedInUser.userId}`,
+    `https://trufflemarketapi.azurewebsites.net/user/bids`,
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${loggedInUser.token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json;charset=utf-8",
       },
     }
@@ -51,19 +51,17 @@ const onClickClose = (index, row) => {
 };
 
 const closeRowItem = async () => {
-  console.log(closeRow.value);
-
-  const closeResponse = await fetch(`https://trufflemarketapi.azurewebsites.net/items/bid/close`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${loggedInUser.token}`,
-      "Content-Type": "application/json;charset=utf-8",
-    },
-    body: JSON.stringify({
-      ...closeRow.value,
-      buyerId: loggedInUser.userId,
-    }),
-  });
+  const closeResponse = await fetch(
+    `https://trufflemarketapi.azurewebsites.net/items/bid/close`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json;charset=utf-8",
+      },
+      body: JSON.stringify(closeRow.value),
+    }
+  );
 
   if (closeResponse.ok) {
     showSuccesClose();
