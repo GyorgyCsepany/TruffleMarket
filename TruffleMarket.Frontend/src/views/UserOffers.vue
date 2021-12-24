@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import dayjs from "dayjs";
 import {
   SoldOut,
   SuccessFilled,
@@ -112,7 +113,7 @@ const onClickClose = async (index, row) => {
         </el-table-column>
         <el-table-column label="Expiration">
           <template #default="scope">{{
-            String(scope.row.expiration).substring(0,10)
+            dayjs(scope.row.expiration).format("YYYY-MM-DD")
           }}</template>
         </el-table-column>
         <el-table-column label="Action" width="80">

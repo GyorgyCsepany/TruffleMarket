@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import dayjs from "dayjs";
 import {
   TrendCharts,
   SuccessFilled,
@@ -108,7 +109,7 @@ const closeRowItem = async () => {
         </el-table-column>
         <el-table-column label="Expiration" width="100">
           <template #default="scope">{{
-            String(scope.row.expiration).substring(0, 10)
+            dayjs(scope.row.expiration).format("YYYY-MM-DD")
           }}</template>
         </el-table-column>
         <el-table-column label="Action" width="85">

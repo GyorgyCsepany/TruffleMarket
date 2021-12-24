@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import dayjs from "dayjs";
 import { VueGoodTable } from "vue-good-table-next";
 import {
   GoodsFilled,
@@ -114,8 +115,8 @@ const onRowClick = async (item) => {
   clickedItem.value = {
     ...clickedItem.value,
     ...itemJson,
-    pickingDate: String(clickedItem.value.pickingDate).substring(0, 10),
-    expiration: String(clickedItem.value.expiration).substring(0, 10),
+    pickingDate: dayjs(clickedItem.value.pickingDate).format('YYYY-MM-DD'),
+    expiration: dayjs(clickedItem.value.expiration).format('YYYY-MM-DD'),
   };
 };
 
