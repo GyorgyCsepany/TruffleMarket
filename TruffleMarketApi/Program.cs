@@ -58,7 +58,10 @@ app.MapGet("/item/{itemId}", async (int itemId, IItemService itemService) =>
     await itemService.GetItemInfo(itemId));
 
 app.MapPut("/item/{itemId}/bid", async (ItemBidModel bidModel, IItemService itemService) =>
-    await itemService.BidforItem(bidModel)).RequireAuthorization();
+{
+    var itemId = await itemService.BidforItem(bidModel);
+    return itemId is null ? Results.NotFound() : Results.Ok(itemId);
+}).RequireAuthorization();
 
 app.MapPut("/items/batch", async (ItemBatchModel butchModel, IItemService itemService) =>
 {

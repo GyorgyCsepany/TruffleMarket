@@ -18,7 +18,10 @@ namespace TruffleMarketApi.Services.Item
 
         public async Task<GridResponseModel> GetItemsForGrid(string filterTruffle, string sortField, string sortType, int page, int perPage)
         {
-            var queryable = _dBContext.Item.Where(item => string.IsNullOrEmpty(filterTruffle) || item.Truffle == filterTruffle);
+            var queryable = _dBContext.Item
+                .Where(item => (string.IsNullOrEmpty(filterTruffle) || item.Truffle == filterTruffle)
+                               && item.Expiration > DateTimeOffset.UtcNow
+                               && !item.ClosedBySeller);
 
             var totalCount = await queryable.CountAsync();
 
@@ -105,12 +108,20 @@ namespace TruffleMarketApi.Services.Item
 
         public async Task<int?> BidforItem(ItemBidModel itemBidModel)
         {
-            var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == itemBidModel.ItemId && itemBidModel.BidPrice > i.Price && i.Expiration > DateTimeOffset.UtcNow);
+            var userId = _userService.UserProfil.UserId;
+
+            var item = await _dBContext.Item
+                .FirstOrDefaultAsync(i => i.ItemId == itemBidModel.ItemId
+                    && itemBidModel.BidPrice > i.Price
+                    && i.Expiration > DateTimeOffset.UtcNow
+                    && i.SellerId != userId
+                    && i.BuyerId != userId
+                    && !i.ClosedBySeller);
 
             if (item is null)
                 return null;
 
-            item.BuyerId = _userService.UserProfil.UserId;
+            item.BuyerId = userId;
             item.Price = itemBidModel.BidPrice;
 
             await _dBContext.SaveChangesAsync();
@@ -208,7 +219,12 @@ namespace TruffleMarketApi.Services.Item
         public async Task<ItemKnapSackResultModel> BatchBid(ItemBatchModel itemButchModel)
         {
             var buyerId = _userService.UserProfil.UserId;
-            var items = await _dBContext.Item.Where(i => i.Truffle == itemButchModel.Truffle && i.Expiration > DateTimeOffset.UtcNow && i.BuyerId != buyerId).ToListAsync();
+            var items = await _dBContext.Item.Where(i => i.Truffle == itemButchModel.Truffle
+                                                && i.Expiration > DateTimeOffset.UtcNow
+                                                && i.BuyerId != buyerId
+                                                && i.SellerId != buyerId
+                                                && !i.ClosedBySeller)
+                                                .ToListAsync();
             var itemCount = items.Count;
 
             var maxCapacity = (int) (itemButchModel.MaxTotalPrice * 100);

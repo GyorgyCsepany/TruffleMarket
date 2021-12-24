@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import dayjs from "dayjs";
 import { VueGoodTable } from "vue-good-table-next";
 import {
@@ -77,13 +78,15 @@ const getItems = async (newParams) => {
   rowCount.value = itemsJson.totalRows;
 };
 
-const token = localStorage.token;
-const gridRows = ref(null);
-const rowCount = ref(0);
 let gridRequest = {
   page: 1,
   perPage: 10,
 };
+(async () => await getItems())();
+const token = localStorage.token;
+const router = useRouter();
+const gridRows = ref(null);
+const rowCount = ref(0);
 
 const biddingPrice = ref(0);
 const bidDialogVisible = ref(false);
@@ -92,8 +95,6 @@ const batchBidFormRef = ref({});
 const batchBidDialogVisible = ref(false);
 const batchBidModel = ref({});
 const clickedItem = ref({});
-
-(async () => await getItems())();
 
 const onRowClick = async (item) => {
   bidDialogVisible.value = true;
@@ -115,8 +116,8 @@ const onRowClick = async (item) => {
   clickedItem.value = {
     ...clickedItem.value,
     ...itemJson,
-    pickingDate: dayjs(clickedItem.value.pickingDate).format('YYYY-MM-DD'),
-    expiration: dayjs(clickedItem.value.expiration).format('YYYY-MM-DD'),
+    pickingDate: dayjs(clickedItem.value.pickingDate).format("YYYY-MM-DD"),
+    expiration: dayjs(clickedItem.value.expiration).format("YYYY-MM-DD"),
   };
 };
 
@@ -141,7 +142,11 @@ const makeABid = async () => {
   );
 
   if (bidResponse.ok) {
-    bidDialogVisible.value = false;
+    showBidSuccess();
+    document.getElementsByClassName("el-menu-item")[1].click();
+    router.push({ name: "UserBids" });
+  } else {
+    showBidError();
   }
 };
 
@@ -162,11 +167,27 @@ const submitBatchBid = async () => {
       if (batchBidResponse.ok) {
         const batchBidResponseJson = await batchBidResponse.json();
         showBatchBidSuccess(batchBidResponseJson);
+        document.getElementsByClassName("el-menu-item")[1].click();
+        router.push({ name: "UserBids" });
       } else {
         showBatchBidError();
       }
       batchBidDialogVisible.value = false;
     }
+  });
+};
+
+const showBidError = () => {
+  ElMessage({
+    message: "Somthing went wrong! Your bid can not executed!",
+    type: "error",
+  });
+};
+
+const showBidSuccess = () => {
+  ElMessage({
+    message: `Your bid successfully!`,
+    type: "success",
   });
 };
 
