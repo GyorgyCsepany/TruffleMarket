@@ -5,7 +5,7 @@
         public int ItemId { get; set; }
         public string Truffle { get; set; }
         public int Weight { get; set; }
-        public double Price { get; set; }
+        public int Price { get; set; }
         public string Origin { get; set; }
         public DateTimeOffset PickingDate { get; set; }
         public bool Certificated { get; set; }

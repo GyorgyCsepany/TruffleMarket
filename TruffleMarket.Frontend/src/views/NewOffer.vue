@@ -136,8 +136,6 @@ const rules = ref({
           <el-form-item label="Price" prop="price">
             <el-input-number
               v-model="offer.price"
-              :precision="2"
-              :step="0.01"
               :min="1"
               controls-position="right"
             />

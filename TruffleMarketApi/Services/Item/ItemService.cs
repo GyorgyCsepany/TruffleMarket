@@ -228,7 +228,7 @@ namespace TruffleMarketApi.Services.Item
                                                 .ToListAsync();
             var itemCount = items.Count;
 
-            var maxCapacity = (int) (itemButchModel.MaxTotalPrice * 100);
+            var maxCapacity = itemButchModel.MaxTotalPrice;
 
             var matrix = KnapSack(maxCapacity, itemCount, items);
             var maxTotalWeight = matrix[itemCount, maxCapacity];
@@ -253,7 +253,7 @@ namespace TruffleMarketApi.Services.Item
                 for (int w = 1; w <= maxCapacity; w++)
                 {
                     var currentItem = items[i - 1];
-                    var currentItemPrice = (int) (currentItem.Price * 100) + 1; 
+                    var currentItemPrice = currentItem.Price + 1; 
 
                     if (currentItemPrice <= w)
                     {
@@ -282,12 +282,12 @@ namespace TruffleMarketApi.Services.Item
                     var includedItem = items[i - 1];
 
                     includedItem.BuyerId = BuyerId;
-                    includedItem.Price = Math.Round(includedItem.Price + 0.01, 2);
+                    includedItem.Price++;
 
                     resultModel.IncludedItemsId.Add(includedItem.ItemId);
                     resultModel.TotalPrice += includedItem.Price;
 
-                    j -= (int) (includedItem.Price * 100);
+                    j -= includedItem.Price;
                 }
 
                 i--;

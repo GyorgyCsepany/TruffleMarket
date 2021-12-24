@@ -64,7 +64,7 @@ namespace TruffleMarketApi.Services.User
 
             var increasedRateCount = user.RateCount + 1;
 
-            user.Rate = ((user.Rate * user.RateCount) + newRate) / increasedRateCount;
+            user.Rate = Math.Round(((user.Rate * user.RateCount) + newRate) / increasedRateCount, 2);
             user.RateCount = increasedRateCount;
 
             await _dBContext.SaveChangesAsync();

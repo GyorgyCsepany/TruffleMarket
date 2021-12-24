@@ -48,7 +48,7 @@ const submitForm = () => {
 
       if (response.ok) {
         showSuccess();
-        const responseJson =  await response.json();
+        const responseJson = await response.json();
         localStorage.token = responseJson.token;
         localStorage.user = responseJson.name;
         document.getElementsByClassName("el-menu-item")[0].click();
@@ -102,7 +102,7 @@ const rules = ref({
 <template>
   <div class="UserPage-container">
     <el-card v-if="user" class="box-card">
-      <h2>Welcome {{user}}!</h2>
+      <h2>Welcome {{ user }}!</h2>
       <el-button color="#2c394f" type="primary" @click="logout"
         >Logout</el-button
       >

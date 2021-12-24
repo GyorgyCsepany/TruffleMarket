@@ -31,7 +31,7 @@ const gridColumns = [
   {
     label: "Price",
     field: "price",
-    type: "decimal",
+    type: "number",
   },
   {
     label: "Picking date",
@@ -276,9 +276,7 @@ const resetBatchDialog = () => batchBidFormRef.value.resetFields();
       <template v-if="token" #footer>
         <el-input-number
           v-model="biddingPrice"
-          :precision="2"
-          :step="0.01"
-          :min="clickedItem.price + 0.01"
+          :min="clickedItem.price + 1"
           size="medium"
         />
         <el-button color="#2c394f" width="20px" type="primary" @click="makeABid"
@@ -330,7 +328,6 @@ const resetBatchDialog = () => batchBidFormRef.value.resetFields();
           ]"
           ><el-slider
             v-model="batchBidModel.maxTotalPrice"
-            :step="0.01"
             :max="1000"
           ></el-slider
         ></el-form-item>

@@ -3,6 +3,6 @@
     public class ItemBidModel
     {
         public int ItemId { get; set; }
-        public double BidPrice { get; set; }
+        public int BidPrice { get; set; }
     }
 }
