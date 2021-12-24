@@ -53,7 +53,6 @@ namespace TruffleMarketApi.Services.Item
                     Price = i.Price,
                     Origin = i.Origin,
                     PickingDate = i.PickingDate,
-                    Certificated = i.Certificated,
                     Expiration = i.Expiration
                 })
                 .ToListAsync();
@@ -95,6 +94,7 @@ namespace TruffleMarketApi.Services.Item
             var itemModel = new ItemInfoModel
             {
                 Description = item.Description,
+                Certificated = item.Certificated,
                 SellerRate = item.Seller.Rate,
                 BuyerName = item.Buyer?.Name,
                 SellerName = item.Seller.Name

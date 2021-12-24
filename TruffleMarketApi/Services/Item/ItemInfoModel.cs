@@ -3,6 +3,7 @@
     public class ItemInfoModel
     {
         public string Description { get; set; }
+        public bool Certificated { get; set; }
         public double? SellerRate { get; set; }
         public string BuyerName { get; set; }
         public string SellerName { get; set; }

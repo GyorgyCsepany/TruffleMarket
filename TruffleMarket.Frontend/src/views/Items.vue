@@ -33,10 +33,6 @@ const gridColumns = [
     type: "decimal",
   },
   {
-    label: "Origin",
-    field: "origin",
-  },
-  {
     label: "Picking date",
     field: "pickingDate",
     type: "date",
@@ -44,9 +40,8 @@ const gridColumns = [
     dateOutputFormat: "yyyy-MM-dd",
   },
   {
-    label: "Certificated",
-    field: "certificated",
-    type: "boolean",
+    label: "Origin",
+    field: "origin",
   },
   {
     label: "Expiration",
@@ -142,7 +137,7 @@ const makeABid = async () => {
       },
       body: JSON.stringify({
         itemId: clickedItem.value.itemId,
-        bidPrice: biddingPrice.value
+        bidPrice: biddingPrice.value,
       }),
     }
   );

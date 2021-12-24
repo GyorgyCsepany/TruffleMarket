@@ -8,7 +8,6 @@
         public double Price { get; set; }
         public string Origin { get; set; }
         public DateTimeOffset PickingDate { get; set; }
-        public bool Certificated { get; set; }
         public DateTimeOffset Expiration { get; set; }
 
     }
