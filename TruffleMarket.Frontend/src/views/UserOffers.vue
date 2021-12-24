@@ -8,6 +8,9 @@ import {
   CircleCloseFilled,
 } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+
+const truffleApiUrl = import.meta.env.VITE_TRUFFLE_API_URL;
+
 const token = localStorage.token;
 const tableData = ref();
 
@@ -26,7 +29,7 @@ const showErrorClose = () => {
 };
 
 const getOffers = async () => {
-  const offersResponse = await fetch(`https://trufflemarketapi.azurewebsites.net/user/offers`, {
+  const offersResponse = await fetch(`${truffleApiUrl}/user/offers`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -39,19 +42,16 @@ const getOffers = async () => {
 (async () => await getOffers())();
 
 const onClickClose = async (index, row) => {
-  const closeResponse = await fetch(
-    `https://trufflemarketapi.azurewebsites.net/items/offer/close`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify({
-        itemId: row.itemId,
-      }),
-    }
-  );
+  const closeResponse = await fetch(`${truffleApiUrl}/items/offer/close`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json;charset=utf-8",
+    },
+    body: JSON.stringify({
+      itemId: row.itemId,
+    }),
+  });
 
   if (closeResponse.ok) {
     showSuccesClose();

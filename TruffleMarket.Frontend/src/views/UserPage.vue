@@ -4,6 +4,8 @@ import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import "element-plus/es/components/message/style/css";
 
+const truffleApiUrl = import.meta.env.VITE_TRUFFLE_API_URL;
+
 const router = useRouter();
 const userInput = ref({});
 const formRef = ref({});
@@ -32,19 +34,16 @@ const logout = () => {
 const submitForm = () => {
   formRef.value.validate(async (valid) => {
     if (valid) {
-      const response = await fetch(
-        "https://trufflemarketapi.azurewebsites.net/user",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json;charset=utf-8",
-          },
-          body: JSON.stringify({
-            ...userInput.value,
-            isLogin: isRegistration.value ? false : true,
-          }),
-        }
-      );
+      const response = await fetch(`${truffleApiUrl}/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+        body: JSON.stringify({
+          ...userInput.value,
+          isLogin: isRegistration.value ? false : true,
+        }),
+      });
 
       if (response.ok) {
         showSuccess();

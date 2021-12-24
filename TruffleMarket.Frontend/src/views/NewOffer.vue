@@ -5,6 +5,8 @@ import { ElMessage } from "element-plus";
 import { Coin } from "@element-plus/icons-vue";
 import "element-plus/es/components/message/style/css";
 
+const truffleApiUrl = import.meta.env.VITE_TRUFFLE_API_URL;
+
 const router = useRouter();
 const formRef = ref({});
 const offer = ref({
@@ -30,17 +32,14 @@ const showSuccess = (itemId) => {
 const submitForm = () => {
   formRef.value.validate(async (valid) => {
     if (valid) {
-      const response = await fetch(
-        "https://trufflemarketapi.azurewebsites.net/item",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.token}`,
-            "Content-Type": "application/json;charset=utf-8",
-          },
-          body: JSON.stringify(offer.value),
-        }
-      );
+      const response = await fetch(`${truffleApiUrl}/item`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`,
+          "Content-Type": "application/json;charset=utf-8",
+        },
+        body: JSON.stringify(offer.value),
+      });
 
       if (response.ok) {
         const itemId = await response.text();

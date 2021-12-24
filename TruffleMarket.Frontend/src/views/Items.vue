@@ -13,6 +13,8 @@ import { ElMessage } from "element-plus";
 import "element-plus/es/components/message/style/css";
 import "vue-good-table-next/dist/vue-good-table-next.css";
 
+const truffleApiUrl = import.meta.env.VITE_TRUFFLE_API_URL;
+
 const gridColumns = [
   {
     label: "Truffle",
@@ -63,15 +65,12 @@ const getItems = async (newParams) => {
   const sortType = gridRequest.sort ? gridRequest.sort[0].type : "";
   const queryString = `page=${gridRequest.page}&perPage=${gridRequest.perPage}&filterTruffle=${filterTruffle}&sortField=${sortField}&sortType=${sortType}`;
 
-  const itemsResponse = await fetch(
-    `https://trufflemarketapi.azurewebsites.net/items?${queryString}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-    }
-  );
+  const itemsResponse = await fetch(`${truffleApiUrl}/items?${queryString}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+    },
+  });
 
   const itemsJson = await itemsResponse.json();
   gridRows.value = itemsJson.rows;
@@ -101,15 +100,12 @@ const onRowClick = async (item) => {
   biddingPrice.value = item.row.price + 0.01;
   clickedItem.value = item.row;
 
-  const itemResponse = await fetch(
-    `https://trufflemarketapi.azurewebsites.net/item/${item.row.itemId}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-    }
-  );
+  const itemResponse = await fetch(`${truffleApiUrl}/item/${item.row.itemId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+    },
+  });
 
   const itemJson = await itemResponse.json();
 
@@ -127,7 +123,7 @@ const onBatchBidButtonClick = () => {
 
 const makeABid = async () => {
   const bidResponse = await fetch(
-    `https://trufflemarketapi.azurewebsites.net/item/${clickedItem.value.itemId}/bid`,
+    `${truffleApiUrl}/item/${clickedItem.value.itemId}/bid`,
     {
       method: "PUT",
       headers: {
@@ -153,17 +149,14 @@ const makeABid = async () => {
 const submitBatchBid = async () => {
   batchBidFormRef.value.validate(async (valid) => {
     if (valid) {
-      const batchBidResponse = await fetch(
-        `https://trufflemarketapi.azurewebsites.net/items/batch`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json;charset=utf-8",
-          },
-          body: JSON.stringify(batchBidModel.value),
-        }
-      );
+      const batchBidResponse = await fetch(`${truffleApiUrl}/items/batch`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json;charset=utf-8",
+        },
+        body: JSON.stringify(batchBidModel.value),
+      });
       if (batchBidResponse.ok) {
         const batchBidResponseJson = await batchBidResponse.json();
         showBatchBidSuccess(batchBidResponseJson);
