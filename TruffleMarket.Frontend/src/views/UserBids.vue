@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from "vue";
-import dayjs from "dayjs";
 import {
   TrendCharts,
   SuccessFilled,
@@ -107,12 +106,12 @@ const closeRowItem = async () => {
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column label="Expiration">
+        <el-table-column label="Expiration" width="100">
           <template #default="scope">{{
-            dayjs(scope.row.expiration).format("YYYY-MM-DD HH:mm:ss")
+            String(scope.row.expiration).substring(0, 10)
           }}</template>
         </el-table-column>
-        <el-table-column label="Action" width="80">
+        <el-table-column label="Action" width="85">
           <template #default="scope">
             <el-button
               size="mini"
@@ -173,7 +172,7 @@ const closeRowItem = async () => {
 
 .NewBids-container .el-card {
   background-color: rgb(231, 227, 227);
-  width: 50em;
+  width: 46em;
   color: #2c394f !important;
 }
 

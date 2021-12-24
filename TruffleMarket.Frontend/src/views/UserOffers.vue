@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from "vue";
-import dayjs from "dayjs";
 import {
   SoldOut,
   SuccessFilled,
@@ -113,7 +112,7 @@ const onClickClose = async (index, row) => {
         </el-table-column>
         <el-table-column label="Expiration">
           <template #default="scope">{{
-            dayjs(scope.row.expiration).format("YYYY-MM-DD HH:mm:ss")
+            String(scope.row.expiration).substring(0,10)
           }}</template>
         </el-table-column>
         <el-table-column label="Action" width="80">
@@ -149,7 +148,7 @@ const onClickClose = async (index, row) => {
 
 .UserOffers-container .el-card {
   background-color: rgb(231, 227, 227);
-  width: 50em;
+  width: 47em;
   color: #2c394f !important;
 }
 

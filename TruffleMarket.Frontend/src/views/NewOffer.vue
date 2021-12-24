@@ -154,7 +154,7 @@ const rules = ref({
           <el-form-item label="Expiration" prop="expiration">
             <el-date-picker
               v-model="offer.expiration"
-              type="datetime"
+              type="date"
               placeholder="Select date and time"
             />
           </el-form-item>
