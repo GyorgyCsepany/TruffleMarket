@@ -45,8 +45,8 @@ const submitForm = () => {
       if (response.ok) {
         const itemId = await response.text();
         showSuccess(itemId);
-        document.getElementsByClassName("el-menu-item")[0].click();
-        router.push({ name: "Items" });
+        document.getElementsByClassName("el-menu-item")[2].click();
+        router.push({ name: "UserOffers" });
       } else {
         showError();
       }
@@ -159,6 +159,14 @@ const rules = ref({
             />
           </el-form-item>
         </div>
+        <el-form-item label="Description" prop="description">
+          <el-input
+            v-model="offer.description"
+            :rows="2"
+            type="textarea"
+            placeholder="Please give a short description"
+          />
+        </el-form-item>
         <el-form-item label="Certificated" prop="certificated">
           <el-switch
             v-model="offer.certificated"

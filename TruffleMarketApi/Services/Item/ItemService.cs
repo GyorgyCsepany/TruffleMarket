@@ -78,6 +78,7 @@ namespace TruffleMarketApi.Services.Item
                 PickingDate = itemCreateModel.PickingDate,
                 Certificated = itemCreateModel.Certificated,
                 Expiration = itemCreateModel.Expiration,
+                Description = itemCreateModel.Description,
                 SellerId = _userService.UserProfil.UserId
             };
 
