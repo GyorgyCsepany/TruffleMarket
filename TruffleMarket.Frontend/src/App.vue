@@ -41,7 +41,7 @@ const handleMenuItemSelect = (menuIndex) => {
         <el-menu-item index="1">Active items</el-menu-item>
         <el-menu-item index="2">Your bids</el-menu-item>
         <el-menu-item index="3">Your offers</el-menu-item>
-        <el-menu-item index="4">Submit and offer</el-menu-item>
+        <el-menu-item index="4">Submit an offer</el-menu-item>
         <el-menu-item index="5"
           ><el-icon><user-filled /></el-icon
         ></el-menu-item>
