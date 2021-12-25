@@ -118,14 +118,14 @@ const rules = ref({
           <el-input v-model="userInput.name" />
         </el-form-item>
         <el-form-item label="Password" prop="password">
-          <el-input v-model="userInput.password" />
+          <el-input v-model="userInput.password" type="password" />
         </el-form-item>
         <el-form-item
           v-if="isRegistration"
           label="Confirm password"
           prop="confirmPassword"
         >
-          <el-input v-model="userInput.confirmPassword" />
+          <el-input v-model="userInput.confirmPassword" type="password" />
         </el-form-item>
         <el-form-item v-if="isRegistration" label="Email" prop="email">
           <el-input v-model="userInput.email" />
