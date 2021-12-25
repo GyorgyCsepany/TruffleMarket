@@ -114,7 +114,7 @@ const rules = ref({
         :rules="rules"
         label-position="top"
       >
-        <el-form-item label="Name" prop="user">
+        <el-form-item label="Name" prop="name">
           <el-input v-model="userInput.name" />
         </el-form-item>
         <el-form-item label="Password" prop="password">
