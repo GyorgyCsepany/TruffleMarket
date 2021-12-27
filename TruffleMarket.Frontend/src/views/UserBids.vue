@@ -51,7 +51,7 @@ const onClickClose = (index, row) => {
 };
 
 const closeRowItem = async () => {
-  const closeResponse = await fetch(`${truffleApiUrl}/items/bid/close`, {
+  const closeResponse = await fetch(`${truffleApiUrl}/user/bid/close`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${token}`,

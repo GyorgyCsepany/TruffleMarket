@@ -100,7 +100,7 @@ const onRowClick = async (item) => {
   biddingPrice.value = item.row.price + 0.01;
   clickedItem.value = item.row;
 
-  const itemResponse = await fetch(`${truffleApiUrl}/item/${item.row.itemId}`, {
+  const itemResponse = await fetch(`${truffleApiUrl}/items/${item.row.itemId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
@@ -123,7 +123,7 @@ const onBatchBidButtonClick = () => {
 
 const makeABid = async () => {
   const bidResponse = await fetch(
-    `${truffleApiUrl}/item/${clickedItem.value.itemId}/bid`,
+    `${truffleApiUrl}/items/${clickedItem.value.itemId}`,
     {
       method: "PUT",
       headers: {

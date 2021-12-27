@@ -51,17 +51,17 @@ app.MapGet("/items", async ([FromQuery(Name = "FilterTruffle")] string filterTru
                             IItemService itemService ) =>
     await itemService.GetItemsForGrid(filterTruffle, sortField, sortType, page, perPage));
 
-app.MapPost("/item", async (ItemCreateModel model, IItemService itemService) => 
-    await itemService.Offer(model)).RequireAuthorization();
-
-app.MapGet("/item/{itemId}", async (int itemId, IItemService itemService) =>
+app.MapGet("/items/{itemId}", async (int itemId, IItemService itemService) =>
     await itemService.GetItemInfo(itemId));
 
-app.MapPut("/item/{itemId}/bid", async (ItemBidModel bidModel, IItemService itemService) =>
+app.MapPut("/items/{itemId}", async (ItemBidModel bidModel, IItemService itemService) =>
 {
     var itemId = await itemService.BidforItem(bidModel);
     return itemId is null ? Results.NotFound() : Results.Ok(itemId);
 }).RequireAuthorization();
+
+app.MapPost("/item", async (ItemCreateModel model, IItemService itemService) =>
+    await itemService.Offer(model)).RequireAuthorization();
 
 app.MapPut("/items/batch", async (ItemBatchModel butchModel, IItemService itemService) =>
 {
@@ -72,13 +72,13 @@ app.MapPut("/items/batch", async (ItemBatchModel butchModel, IItemService itemSe
 app.MapGet("/user/bids", async (IItemService itemService) =>
     await itemService.GetItemsForBuyer()).RequireAuthorization();
 
-app.MapPut("/items/bid/close", async (BidCloseModel closeModel, IItemService itemService) =>
-    await itemService.CloseBid(closeModel)).RequireAuthorization();
-
 app.MapGet("/user/offers", async (IItemService itemService) =>
     await itemService.GetItemsForSeller()).RequireAuthorization();
 
-app.MapPut("/items/offer/close", async (OfferCloseModel closeModel, IItemService itemService) =>
+app.MapPut("/user/bid/close", async (BidCloseModel closeModel, IItemService itemService) =>
+    await itemService.CloseBid(closeModel)).RequireAuthorization();
+
+app.MapPut("/user/offer/close", async (OfferCloseModel closeModel, IItemService itemService) =>
     await itemService.CloseOffer(closeModel)).RequireAuthorization();
 
 app.Run();

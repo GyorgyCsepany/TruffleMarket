@@ -42,7 +42,7 @@ const getOffers = async () => {
 (async () => await getOffers())();
 
 const onClickClose = async (index, row) => {
-  const closeResponse = await fetch(`${truffleApiUrl}/items/offer/close`, {
+  const closeResponse = await fetch(`${truffleApiUrl}/user/offer/close`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${token}`,
