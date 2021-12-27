@@ -159,7 +159,7 @@ namespace TruffleMarketApi.Services.Item
             var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == closeModel.ItemId && i.BuyerId == _userService.UserProfil.UserId);
 
             if (item is null)
-                return;
+                Results.NotFound();
 
             if (closeModel.SellerRate != null)
                 await _userService.RateUser(closeModel.SellerId, (double)closeModel.SellerRate);
@@ -203,7 +203,7 @@ namespace TruffleMarketApi.Services.Item
             var item = await _dBContext.Item.FirstOrDefaultAsync(i => i.ItemId == closeModel.ItemId && i.SellerId == _userService.UserProfil.UserId);
 
             if (item is null)
-                return;
+                Results.NotFound();
 
             if (item.BuyerId is null || item.ClosedByBuyer)
             {
