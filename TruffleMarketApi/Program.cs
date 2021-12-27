@@ -52,7 +52,10 @@ app.MapGet("/items", async ([FromQuery(Name = "FilterTruffle")] string filterTru
     await itemService.GetItemsForGrid(filterTruffle, sortField, sortType, page, perPage));
 
 app.MapGet("/items/{itemId}", async (int itemId, IItemService itemService) =>
-    await itemService.GetItemInfo(itemId));
+{
+    var item = await itemService.GetItemInfo(itemId);
+    return item is null ? Results.NotFound() : Results.Ok(itemId);
+});
 
 app.MapPut("/items/{itemId}", async (ItemBidModel bidModel, IItemService itemService) =>
 {
