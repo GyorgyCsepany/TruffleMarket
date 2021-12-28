@@ -100,7 +100,6 @@ namespace TruffleMarketApi.Services.Item
                 Description = item.Description,
                 Certificated = item.Certificated,
                 SellerRate = item.Seller.Rate,
-                BuyerName = item.Buyer?.Name,
                 SellerName = item.Seller.Name
             };
 
