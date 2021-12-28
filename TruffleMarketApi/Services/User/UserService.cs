@@ -16,7 +16,7 @@ namespace TruffleMarketApi.Services.User
             _dBContext = dBContext;
         }
 
-        public async Task<UserProfileModel> LoginOrRegister(UserLoginOrRegisterModel model)
+        public async Task<UserResponseModel> LoginOrRegister(UserLoginOrRegisterModel model)
         {
             if (model is null)
                 return null;
@@ -50,9 +50,9 @@ namespace TruffleMarketApi.Services.User
                 IsAdmin = user.IsAdmin,
             };
 
-            userProfile.Token = _jwtTokenService.GetToken(userProfile);
+            var token = _jwtTokenService.GetToken(userProfile);
 
-            return userProfile;
+            return new UserResponseModel { Name = userProfile.Name, Token = token };
         }
 
         public async Task<int?> RateUser(int userId, double newRate)
