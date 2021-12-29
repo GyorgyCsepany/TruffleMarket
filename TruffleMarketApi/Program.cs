@@ -54,7 +54,7 @@ app.MapGet("/items", async ([FromQuery(Name = "FilterTruffle")] string filterTru
 app.MapGet("/items/{itemId}", async (int itemId, IItemService itemService) =>
 {
     var item = await itemService.GetItemInfo(itemId);
-    return item is null ? Results.NotFound() : Results.Ok(itemId);
+    return item is null ? Results.NotFound() : Results.Ok(item);
 });
 
 app.MapPut("/items/{itemId}", async (ItemBidModel bidModel, IItemService itemService) =>
